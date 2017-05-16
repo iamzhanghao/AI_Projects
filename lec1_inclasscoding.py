@@ -40,8 +40,10 @@ def plot_samples(samples):
     plt.show()
 
 samples = draw_samples(1000)
-plot_samples(samples)
 
 print(time.time()-start_time)
+
+plot_samples(samples)
+
 
 
