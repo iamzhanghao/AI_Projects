@@ -3,6 +3,9 @@ import scipy
 import h5py
 import tensorflow
 from matplotlib import pyplot as plt
+import time
+
+start_time = time.time()
 
 def draw_samples(n):
     A1 = np.array([[0.70710678118, 0.70710678118],
@@ -38,5 +41,7 @@ def plot_samples(samples):
 
 samples = draw_samples(1000)
 plot_samples(samples)
+
+print(time.time()-start_time)
 
 
