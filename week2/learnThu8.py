@@ -645,7 +645,7 @@ def t9(order=9):
     ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
 
 
-# Blog feedback data, with analytic ridge regression     
+# Blog feedback data, with analytic ridge regression
 def t10(n=None,
         logLambdaValues=[-14, -12, -10, -8, -6, -4, -2, 0, 2, 4, 5, 6, 7,
                          8, 9, 10, 12, 14, 16, 18, 20]):
@@ -744,7 +744,7 @@ def tGD2(x0=0):
     plotData(nax, xs, fs, style='ro-')
 
 
-print('Loaded learn.py')
+print('Loaded learnThu8.py')
 
 # testing tGD
 # tGD([0.01, 0.02, 0.03,0.1,0.2,0.3])
