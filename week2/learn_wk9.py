@@ -118,5 +118,5 @@ def tclassReg(order=1, method='gdLin', max_iter=5000, step_size=0.01,
     tclass(X, y, order, method, max_iter, step_size, convPlot)
 
 
-txor_more(method="sgdLog")
+txor_more(method="sgdLog", order=3)
 plt.show(block=True)
