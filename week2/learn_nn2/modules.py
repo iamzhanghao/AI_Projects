@@ -87,8 +87,21 @@ class Linear(Module):
         return self.Y
 
     def backward(self, DY):
+
+        self.dW = np.dot(self.X.T,DY)
+
+        # if self.W is not None:
+        #     self.dW = DY * self.X
+
+        self.dB = np.sum(DY,axis=0)
+
+        return np.dot(DY,self.W.T)
+
+
+
         pass
         # Y.shape=DY.shape=(batchsize,outputlayersize)
+
         # X.shape= (batchsize,inputlayersize)
         # W.shape= (inputlayersize,outputlayersize)
         # B.shape= (outputlayersize,) (1-dim python array)
@@ -139,16 +152,7 @@ class Tanh(Module):
     Tanh Layer
     '''
 
-    def tanh_daoshu(self, shu):
-        return 2./(np.cosh(2*self.X)+1)
-        # return np.divide(2., np.cosh(np.multiply(2, self.X)) + 1)
-
-    def tanh_d_vetor(self,tanh_daoshu,shu):
-        f = np.vectorize(tanh_daoshu)
-        return f(shu)
-
     def forward(self, X):
-        self.X = X
         self.Y = np.tanh(X)
         return self.Y
 
@@ -163,7 +167,8 @@ class Tanh(Module):
 
 
     def backward(self, DY):
-        return np.dot(DY, self.tanh_d_vetor(self.tanh_daoshu,self.X))
+        # return np.dot(DY, self.tanh_d_vetor(self.tanh_daoshu,self.X))
+        return DY * (1 - self.Y ** 2)
 
     # implement the backpropagation rule for a tanh neuron here
 

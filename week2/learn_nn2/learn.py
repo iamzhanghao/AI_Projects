@@ -280,8 +280,7 @@ def testNN(iters=10000, width=3, learning_rates=[0.005], std=True):
     plt.colorbar(im)
     if std:
         colors = [('r' if l == 0 else 'g') for l in y]
-        ax.scatter(X[:, 0], X[:, 1], c=colors, marker='o', s=80,
-                   edgecolors='none')
+        ax.scatter(np.array(X[:, 0].T)[0], np.array(X[:, 1].T)[0], c=colors, marker='o', s=80, edgecolors='none')
     else:
         pinds = np.where(y == 0)
         ninds = np.where(y == 1)
@@ -349,7 +348,5 @@ def splitByClass(XY, trainPct):
 
 
 print('Loaded learn.py')
-
-if __name__ == '__main__':
-    testNN(iters=10000, width=3, learning_rates=[0.005], std=True)
-    plt.show(block=True)
+testNN(iters=10000, width=3, learning_rates=[0.005], std=True)
+plt.show(block=True)
