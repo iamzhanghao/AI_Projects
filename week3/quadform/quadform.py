@@ -476,12 +476,12 @@ def tester9():
     start = Xinit
     qf.train_s(start, iters=10000, lrate=lrate2, stopcrit=1e-6, lratedecrease='phase2000', errormode='cheat')
 
-
+if __name__ == '__main__':
     # tester1()
     # tester2()
 
-tester5()  # standard and momentum with same learning rate, learning rate constant
-# tester6() # standard and momentum, momentum uses higher learning rate , learning rate constant
-# tester7() # standard and momentum, same learning rate, phase-reducing learning rate
-# tester8() # standard and momentum, momentum uses higher learning rate , phase-reducing learning
-# tester9() # standard does not allow the same high learning rate as momentum
+    tester5()  # standard and momentum with same learning rate, learning rate constant
+    # tester6() # standard and momentum, momentum uses higher learning rate , learning rate constant
+    # tester7() # standard and momentum, same learning rate, phase-reducing learning rate
+    # tester8() # standard and momentum, momentum uses higher learning rate , phase-reducing learning
+    # tester9() # standard does not allow the same high learning rate as momentum
