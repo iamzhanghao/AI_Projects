@@ -49,7 +49,6 @@ class quadform2d:
     def update_r(self, lr):
 
         if self.oldnorms is None:
-            self.oldnorms = 0
             # initialize variable self.oldnorms storing squaed average of gradients
 
             self.oldnorms = (1 - self.rmspropconst) * numpy.linalg.norm(self.DX) ** 2
