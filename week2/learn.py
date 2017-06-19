@@ -51,7 +51,7 @@ def mul(seq):
     return reduce(operator.mul, seq, 1)
 
 
-# Given X, an array of training examples, and b, a bandwidth,
+# Given X, an array of training tensorflow_examples, and b, a bandwidth,
 # return a *function* that maps a single value into a vector of features
 def RBFs(X, b):
     def g(x1, x2, b):
@@ -170,7 +170,7 @@ def gdLogReg(X, y, l = 0, step_size = 0.01, w0 = None, max_iter = 1000,
                   eps = eps)
 
 # Stochastic gradient descent
-# X is an n x d matrix of input examples
+# X is an n x d matrix of input tensorflow_examples
 # y is an n x 1 matrix of outputs (we could combine X and Y if we wanted to)
 # f is a function taking a parameter vector, a 1 x d input example,
 #     and a 1 x 1 output value, and returning an error; we want to
