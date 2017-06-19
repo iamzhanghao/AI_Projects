@@ -1,0 +1,28 @@
+ssh alexand6@sutd.nscc.sg
+
+
+# do this one time
+module load tensorflow/1.0
+ln -s /cm/shared/apps/cuda80/toolkit/8.0.44/lib64/stubs/libcuda.so libcuda.so.1 #this creates a symlink "libcuda.so.1" in your home dir $HOME so that libcuda.so.1 can be found, your testrun3.pbs script sets LD_LIBRARYPATH to add $HOME and /cm/shared/apps/cuda80/toolkit/8.0.44/lib64/stubs/
+
+# do this one time
+mkdir -p workspace/
+
+
+
+from your machine:
+scp 102flowers.zip  alexand6@sutd.nscc.sg:workspace/
+scp bvlc_alexnet.npy alexand6@sutd.nscc.sg:workspace/
+scp code.zip  alexand6@sutd.nscc.sg:workspace/
+
+on the cluster:
+cd workspace/
+unzip code.zip
+
+unzip 102flowers.zip
+
+mv trainfile.txt flowers_data/
+mv valtestfile.txt flowers_data/
+
+#from workspace !!!, so that paths are correct
+qsub -q gpu –l walltime=05:00:00  testrun3.pbs
