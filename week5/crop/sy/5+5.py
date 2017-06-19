@@ -12,8 +12,8 @@ import sys
 sys.path.insert(0, '.')
 sys.path.insert(0, '../imagenetdata')
 
-from week5.thu.getimagenetclasses import *
-from week5.thu.alexnet import *
+from week5.crop.getimagenetclasses import *
+from week5.crop.alexnet import *
 
 
 def preproc_py2(imname, shorterside):
@@ -245,9 +245,6 @@ def run3(synsetfile, impath, xmlpath):
     print(('top-5 corr', top5corr))
 
 
-# ('top-1 corr', 0.4716)
-# ('top-5 corr', 0.7224)
-
 
 # print ('np.max(predict_values)', np.max(predict_values))
 # print ('classindex: ',np.argmax(predict_values))
@@ -257,7 +254,7 @@ if __name__ == '__main__':
     # run2()
     # m=np.load('./ilsvrc_2012_mean.npy')
     # print(np.mean(np.mean(m,2),1))
-    synsetfile = '/Users/zhanghao/Projects/AI_Projects/week5/thu/synset_words.txt'
-    impath = '/Users/zhanghao/Projects/AI_Projects/week5/thu/images'
-    xmlpath = '/Users/zhanghao/Projects/AI_Projects/week5/thu/val'
+    synsetfile = '/Users/zhanghao/Projects/AI_Projects/week5/crop/synset_words.txt'
+    impath = '/Users/zhanghao/Projects/AI_Projects/week5/crop/largefiles/images'
+    xmlpath = '/Users/zhanghao/Projects/AI_Projects/week5/crop/largefiles/val'
     run3(synsetfile, impath, xmlpath)
