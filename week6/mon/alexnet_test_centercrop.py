@@ -42,9 +42,9 @@ def preproc_py2(imname,shorterside):
 def cropped_center(im,hsize,wsize):
   h=im.shape[0]
   w=im.shape[1]
-  
-  cim=im[(h-hsize)/2:(h-hsize)/2+hsize,(w-wsize)/2:(w-wsize)/2+wsize,:]
-  
+
+  cim = im[int((h - hsize) / 2):int((h - hsize) / 2 + hsize), int((w - wsize) / 2):int((w - wsize) / 2 + wsize), :]
+
   return cim
     
 
@@ -121,7 +121,7 @@ def run2():
 
   cstepsize=20.0
   chosenlb=949
-  imname='/home/binder/entwurf6/codes/tfplay/ai/alexnet/mrshout2.jpg'
+  imname='/Users/zhanghao/Projects/AI_Projects/week6/mon/randoimg/img0.png'
 
   imagenet_mean = np.array([104., 117., 123.], dtype=np.float32) 
   cls=get_classes()
