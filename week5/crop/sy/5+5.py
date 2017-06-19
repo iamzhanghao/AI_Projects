@@ -1,19 +1,15 @@
-import tensorflow as tf
-import numpy as np
-
-import os
-
 import math
+import os
+import sys
+
 from PIL import Image
 from numpy import int32
-
-import sys
 
 sys.path.insert(0, '.')
 sys.path.insert(0, '../imagenetdata')
 
-from week5.crop.getimagenetclasses import *
-from week5.crop.alexnet import *
+from getimagenetclasses import *
+from alexnet import *
 
 
 def preproc_py2(imname, shorterside):
