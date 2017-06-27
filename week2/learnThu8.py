@@ -755,6 +755,6 @@ print('Loaded learnThu8.py')
 
 # test t(6)
 
-t3()
+t9()
 plt.show(block=True)
 
