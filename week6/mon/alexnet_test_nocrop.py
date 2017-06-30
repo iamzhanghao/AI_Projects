@@ -122,11 +122,8 @@ def run2():
 
   cstepsize=20.0
   chosenlb=949
-  imname='/home/binder/entwurf6/codes/tfplay/ai/alexnet/blaimg.png'
-  
+  imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\img0.png'
 
-
-  
   imagenet_mean = np.array([104., 117., 123.], dtype=np.float32) 
   cls=get_classes()
   

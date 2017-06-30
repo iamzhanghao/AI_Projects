@@ -80,7 +80,7 @@ def plotColor(redExp, greenExp, blueExp, pixelsPerUnit = 150):
     return Image.merge("RGB", (redPlane, greenPlane, bluePlane))
 
 def makeImage(numPics = 20):
-   with open("/Users/zhanghao/Projects/AI_Projects/week6/mon/randoimg/eqns.txt", 'w') as eqnsFile:
+   with open("C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\eqns.txt", 'w') as eqnsFile:
       for i in range(numPics):
          redExp = buildExpr()
          greenExp = buildExpr()
@@ -92,11 +92,11 @@ def makeImage(numPics = 20):
          eqnsFile.write("blue = " + str(blueExp) + "\n\n")
 
          image = plotColor(redExp, greenExp, blueExp)
-         image.save("/Users/zhanghao/Projects/AI_Projects/week6/mon/randoimg/img" + str(i) + ".png", "PNG")
+         image.save("C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\img" + str(i) + ".png", "PNG")
          
          
 def loadimage(index):      
-    image=Image.open("/Users/zhanghao/Projects/AI_Projects/week6/mon/randoimg/img" + str(index) + ".png")
+    image=Image.open("C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\img" + str(index) + ".png")
     #convert your image into a numpy    
     #return ???
     
@@ -106,6 +106,7 @@ def histfromimage(numbins,index=0):
   plt.show()  
     
 if __name__=='__main__':
-  makeImage(100)
+  makeImage(1)
   
   histfromimage(10,0)
+

@@ -234,7 +234,7 @@ def run3(synsetfile, impath, xmlpath):
             # top1corr+=1.0/(num*batchsize)
             top1corr += 1.0 / (num)
         if (lb in ind):
-            # top5corr+=1.0/(num*batchsize)
+            # top5corr+=1.0/(num*ba tchsize)
             top5corr += 1.0 / (num)
 
     print(('top-1 corr', top1corr))

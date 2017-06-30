@@ -106,7 +106,8 @@ def getout():
 def run2():
     cstepsize = 20.0
     chosenlb = 949
-    imname = '/Users/zhanghao/Projects/AI_Projects/week6/mon/randoimg/img10.png'
+    # imname = '/Users/zhanghao/Projects/AI_Projects/week6/mon/randoimg/img10.png'
+    imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\img0.png'
     # imname = '/Users/zhanghao/Projects/AI_Projects/week5/crop/largefiles/images/ILSVRC2012_val_00000009.JPEG'
 
     imagenet_mean = np.array([104., 117., 123.], dtype=np.float32)
@@ -145,11 +146,6 @@ def run2():
     origlabel = np.argmax(predict_values)
 
     print(('at start: classindex: ', origlabel, 'classlabel: ', cls[np.argmax(predict_values)], 'score', np.max(predict_values)))
-
-
-
-
-
 
     print(predict_values[0,chosenlb],predict_values[0,origlabel])
 
