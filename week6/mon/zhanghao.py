@@ -1,8 +1,12 @@
-import math
-import sys
+import tensorflow as tf
+import numpy as np
 
+import math
 from PIL import Image
 from numpy import int32
+import copy
+
+import sys
 
 sys.path.insert(0, '.')
 sys.path.insert(0, '../imagenetdata')
@@ -15,7 +19,7 @@ def preproc_py2(imname, shorterside):
     pilimg = Image.open(imname)
     w, h = pilimg.size
 
-    print((w, h))
+    print(w, h)
 
     if w > h:
         longerside = np.int32(math.floor(float(shorterside) / float(h) * w))
@@ -36,26 +40,26 @@ def cropped_center(im, hsize, wsize):
     h = im.shape[0]
     w = im.shape[1]
 
-    cim = im[int((h - hsize) / 2):int((h - hsize) / 2 + hsize), int((w - wsize) / 2):int((w - wsize) / 2 + wsize), :]
+    cim = im[(h - hsize) / 2:(h - hsize) / 2 + hsize, (w - wsize) / 2:(w - wsize) / 2 + wsize, :]
 
     return cim
 
 
 def preproc(image):
     '''
-  filename_queue = tf.train.string_input_producer(
-    tf.train.match_filenames_once("./images/*.jpg"))
+    filename_queue = tf.train.string_input_producer(
+      tf.train.match_filenames_once("./images/*.jpg"))
 
-  # Read an entire image file which is required since they're JPEGs, if the images
-  # are too large they could be split in advance to smaller files or use the Fixed
-  # reader to split up the file.
-  image_reader = tf.WholeFileReader()
-  
-  # Read a whole file from the queue, the first returned value in the tuple is the
-  # filename which we are ignoring.
-  _, image_file = image_reader.read(filename_queue)
-  
-  '''
+    # Read an entire image file which is required since they're JPEGs, if the images
+    # are too large they could be split in advance to smaller files or use the Fixed
+    # reader to split up the file.
+    image_reader = tf.WholeFileReader()
+
+    # Read a whole file from the queue, the first returned value in the tuple is the
+    # filename which we are ignoring.
+    _, image_file = image_reader.read(filename_queue)
+
+    '''
 
     height = tf.shape(image)[0]
     width = tf.shape(image)[1]
@@ -105,11 +109,10 @@ def getout():
 
 def run2():
     cstepsize = 20.0
-    target_label = 949
-    imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\img0.png'
+    chosenlb = 949
+    imname = '/home/binder/entwurf6/codes/tfplay/ai/alexnet/blaimg.png'
 
     imagenet_mean = np.array([104., 117., 123.], dtype=np.float32)
-
     cls = get_classes()
 
     sess = tf.Session()
@@ -119,9 +122,11 @@ def run2():
     sess.run(init)
     net.load_initial_weights(sess)
 
-    im = preproc_py2(imname, 250)
-    print(im.shape)
-    print(imname)
+    im = preproc_py2(imname, 227)
+    print
+    im.shape
+    print
+    imname
 
     # convert grey to color
     if (im.ndim < 3):
@@ -133,28 +138,20 @@ def run2():
         im = im[:, :, 0:3]
 
     # here need to average over 5 crops instead of one
-    image_croped = cropped_center(im, 227, 227)
-
-    image_croped = image_croped[:, :, [2, 1, 0]]  # RGB to BGR
-    image_croped = image_croped - imagenet_mean
-    image_croped = np.expand_dims(image_croped, 0)
-    print("Shape: ",type(image_croped),image_croped.shape)
-
+    # imcropped=cropped_center(im,227,227)
+    imcropped = im
+    imcropped = imcropped[:, :, [2, 1, 0]]  # RGB to BGR
+    imcropped = imcropped - imagenet_mean
+    imcropped = np.expand_dims(imcropped, 0)
 
     # run initial classification
-    predict_values = sess.run(out, feed_dict={x: image_croped})
+    predict_values = sess.run(out, feed_dict={x: imcropped})
 
-    original_label = np.argmax(predict_values)
+    origlabel = np.argmax(predict_values)
 
-    print('at start: classindex: ' + str(original_label) + '\nclasslabel: ' + cls[
-        np.argmax(predict_values)] + '\nscore:' + str(np.max(predict_values)))
-
-    print(predict_values[0,target_label],predict_values[0,original_label])
-
-    print(image_croped[0].shape)
-    img = Image.fromarray(image_croped[0],"RGB")
-    img.save('C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\modified_img0.png')
-    img.show()
+    print('at start: classindex: ', origlabel, 'classlabel: ', cls[np.argmax(predict_values)], 'score',
+          np.max(predict_values))
+    # print(predict_values[0,chosenlb],predict_values[0,origlabel])
 
 
 if __name__ == '__main__':

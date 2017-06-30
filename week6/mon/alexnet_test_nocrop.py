@@ -7,17 +7,13 @@ from numpy import int32
 import copy
 
 import sys
-sys.path.insert(0,'.')
-sys.path.insert(0,'../imagenetdata')
-
 
 from getimagenetclasses import *
 from alexnet import * 
 
 
 def preproc_py2(imname,shorterside):
-  
-  
+
   pilimg = Image.open(imname)
   w,h=pilimg.size
   
@@ -35,8 +31,6 @@ def preproc_py2(imname,shorterside):
   
   
   im = np.array(resimg,dtype=np.float32)
-  
-  
 
   return im
   
@@ -47,7 +41,6 @@ def cropped_center(im,hsize,wsize):
   cim=im[(h-hsize)/2:(h-hsize)/2+hsize,(w-wsize)/2:(w-wsize)/2+wsize,:]
   
   return cim
-    
 
 def preproc(image):
   
@@ -100,8 +93,6 @@ def preproc(image):
 
   return resimg
 
-
-
 def getout():
   
   batchsize=1
@@ -114,14 +105,13 @@ def getout():
   net=AlexNet( x, keep_prob, num_classes, skip_layer, is_training, weights_path = 'DEFAULT')
   
   out=net.fc8
-  
 
   return out,x,net
 
 def run2():
 
   cstepsize=20.0
-  chosenlb=949
+  target_label=949
   imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\img0.png'
 
   imagenet_mean = np.array([104., 117., 123.], dtype=np.float32) 
@@ -129,50 +119,48 @@ def run2():
   
   sess = tf.Session()
 
-
   out,x,net=getout()
   init = tf.global_variables_initializer()
   sess.run(init)
   net.load_initial_weights(sess)
-  
-  
-  
-  
-  
-  im=preproc_py2(imname,227)
-  print(im.shape)
+
+  image=preproc_py2(imname,227)
+  image=cropped_center(image,227,227)
+  print(image.shape)
   print(imname)
-      
+
+  print(type(image))
+
   #convert grey to color    
-  if(im.ndim<3):
-    im=np.expand_dims(im,2)
-    im=np.concatenate((im,im,im),2)
+  if(image.ndim<3):
+    image=np.expand_dims(image,2)
+    image=np.concatenate((image,image,image),2)
     
   # dump alpha channel if it exists    
-  if(im.shape[2]>3):
-    im=im[:,:,0:3]
+  if(image.shape[2]>3):
+    image=image[:,:,0:3]
 
-  #here need to average over 5 crops instead of one
-  #imcropped=cropped_center(im,227,227)
-  imcropped=im
-  imcropped=imcropped[:,:,[2,1,0]] #RGB to BGR 
-  imcropped=imcropped-imagenet_mean
-  imcropped=np.expand_dims(imcropped,0)
-  
+  image=image[:,:,[2,1,0]] #RGB to BGR
+  image=image-imagenet_mean
+  image=np.expand_dims(image,0)
 
-  
+
   #run initial classification
-  predict_values=sess.run(out, feed_dict={x: imcropped}  )
+  predict_values=sess.run(out, feed_dict={x: image})
   
 
-  origlabel=np.argmax(predict_values)
+  original_label=np.argmax(predict_values)
 
-  print(('at start: classindex: ',origlabel, 'classlabel: ', cls[np.argmax(predict_values)],'score',np.max(predict_values)))
-  #print(predict_values[0,chosenlb],predict_values[0,origlabel])
+  print('at start: classindex: ' + str(original_label)+ '\nclasslabel: '+ cls[np.argmax(predict_values)]+'\nscore:'+ str(np.max(predict_values)))
+  print(predict_values[0,target_label],predict_values[0,original_label])
+  print(len(predict_values))
+
+
+
+
+  img = Image.fromarray(image)
+  img.save('C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\modified_img0.png')
+  img.show()
 
 if __name__=='__main__':
   run2()
-  #m=np.load('./ilsvrc_2012_mean.npy')
-  #print(np.mean(np.mean(m,2),1))
-
-
