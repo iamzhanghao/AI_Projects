@@ -19,7 +19,7 @@ def preproc_py2(imname,shorterside):
   pilimg = Image.open(imname)
   w,h=pilimg.size
   
-  print((w,h))
+  print(w,h)
   
   if w > h:
     longerside= np.int32(math.floor(float(shorterside)/float(h)*w))
@@ -137,8 +137,8 @@ def run2():
   net.load_initial_weights(sess)
 
   im=preproc_py2(imname,250)
-  print(im.shape)
-  print(imname)
+  print im.shape
+  print imname
 
   newImage = Image.fromarray(np.uint8(im))
   newImage.save("original.jpeg")
@@ -160,7 +160,7 @@ def run2():
   imcropped=imcropped-imagenet_mean
   imcropped=np.expand_dims(imcropped,0)
 
-  print((imcropped[0].shape))
+  print(imcropped[0].shape)
 
 
   
@@ -176,8 +176,8 @@ def run2():
     retlist =sess.run([out,tfgradients], feed_dict={x: imcropped})
     predict_values = retlist[0][0]
     grad = retlist[1][0]
-    print((np.array(predict_values).shape))
-    print((np.array(grad).shape))
+    print(np.array(predict_values).shape)
+    print(np.array(grad).shape)
     temp = imcropped + cstepsize * grad
     grad[temp+imagenet_mean > 254] = 0
     grad[temp+imagenet_mean < 1] = 0
@@ -188,8 +188,8 @@ def run2():
         flag = True
     # newlabel = cls[np.argmax(predict_values)]
     newlabel = np.argmax(predict_values)
-    print((predict_values[chosenlb]))
-    print(('at start: classindex: ',origlabel, 'classlabel: ', newlabel,'score',np.max(predict_values)))
+    print (predict_values[chosenlb])
+    print ('at start: classindex: ',origlabel, 'classlabel: ', newlabel,'score',np.max(predict_values))
     if(newlabel==chosenlb):
       count += 1
       # check rounded label
