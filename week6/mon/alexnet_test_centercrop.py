@@ -107,6 +107,8 @@ def run2():
     cstepsize = 20.0
     target_label = 949
     imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\img0.png'
+    imname = 'C:\\Users\H\Desktop\\1.png'
+
 
     imagenet_mean = np.array([104., 117., 123.], dtype=np.float32)
 

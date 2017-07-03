@@ -1,14 +1,17 @@
 import numpy as np
-from PIL import Image
+a = np.array([[[ 1,2    ,3],[2,3,4],
 
 
-imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\img0.png'
+               [2,4,4],[3,1,4]],
+              [[1, 2, 3], [2, 3, 4],
+               [2, 4, 4], [3, 1, 4]],
+              [[1, 2, 3], [2, 3, 4],
+               [2, 4, 4], [3, 1, 4]]
+              ,[[1,2,3],[2,3,4],
+               [2,4,4 ],[3,1,2]]])
 
-image = Image.open(imname)
-image = np.array(image)
-print(type(image))
-print(image)
-print(image.shape)
-img = Image.fromarray(image)
-img.save('C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\modified_img0.png')
-img.show()
+print(a.shape)
+print(a)
+print("new")
+b = np.dot(a,[[1,1,1],[1,1,1],[1,1,1]])
+print(b)

@@ -7,17 +7,19 @@ from numpy import int32
 import copy
 
 import sys
+sys.path.insert(0,'.')
+sys.path.insert(0,'../imagenetdata')
 
 from getimagenetclasses import *
 from alexnet import * 
 
-
 def preproc_py2(imname,shorterside):
-
+  
+  
   pilimg = Image.open(imname)
   w,h=pilimg.size
   
-  print((w,h))
+  print(w,h)
   
   if w > h:
     longerside= np.int32(math.floor(float(shorterside)/float(h)*w))
@@ -26,21 +28,24 @@ def preproc_py2(imname,shorterside):
   else:
     longerside= np.int32(math.floor(float(shorterside)/float(w)*h))
     newh=longerside
-    neww=shorterside    
+    neww=shorterside
   resimg=pilimg.resize((neww,newh))
   
   
   im = np.array(resimg,dtype=np.float32)
+  
+  
 
   return im
   
 def cropped_center(im,hsize,wsize):
   h=im.shape[0]
   w=im.shape[1]
+  
+  cim=im[(h-hsize)/2:(h-hsize)/2+hsize,(w-wsize)/2:(w-wsize)/2+wsize,:]
+  
+  return cim
 
-  center = im[int((h - hsize) / 2):int((h - hsize) / 2 + hsize), int((w - wsize) / 2):int((w - wsize) / 2 + wsize), :]
-
-  return center
 
 def preproc(image):
   
@@ -79,7 +84,7 @@ def preproc(image):
   if image.dtype != tf.float32:
     image = tf.image.convert_image_dtype(image, dtype=tf.float32)
   
-    
+
   resimg=tf.image.resize_images(
       image,
       new_height_and_width
@@ -93,6 +98,7 @@ def preproc(image):
 
   return resimg
 
+
 def getout():
   
   batchsize=1
@@ -101,7 +107,8 @@ def getout():
   keep_prob=1.
   skip_layer=[]
   
-  x = tf.placeholder(tf.float32, [batchsize, 227, 227, 3])  
+  x = tf.placeholder(tf.float32, [batchsize, 227, 227, 3])
+
   net=AlexNet( x, keep_prob, num_classes, skip_layer, is_training, weights_path = 'DEFAULT')
   
   out=net.fc8
@@ -110,57 +117,93 @@ def getout():
 
 def run2():
 
-  cstepsize=20.0
-  target_label=949
-  imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\img0.png'
+  cstepsize=40.0
+  chosenlb=955 #850
+
+  imname='/Users/siyuanw/Desktop/ai_week5/somesimpleimages/mrshout2.jpg'
 
   imagenet_mean = np.array([104., 117., 123.], dtype=np.float32) 
   cls=get_classes()
   
   sess = tf.Session()
 
+
   out,x,net=getout()
+  chosenscore = tf.slice(out,[0,chosenlb],[1,1])
+  tfgradients = tf.gradients(chosenscore, x, name='gradients')
+
   init = tf.global_variables_initializer()
   sess.run(init)
   net.load_initial_weights(sess)
 
-  image=preproc_py2(imname,227)
-  print(image.shape)
-  print(imname)
+  im=preproc_py2(imname,250)
+  print im.shape
+  print imname
 
-  print(type(image))
+  newImage = Image.fromarray(np.uint8(im))
+  newImage.save("original.jpeg")
 
   #convert grey to color    
-  if(image.ndim<3):
-    image=np.expand_dims(image,2)
-    image=np.concatenate((image,image,image),2)
-    
+  if(im.ndim<3):
+    im=np.expand_dims(im,2)
+    im=np.concatenate((im,im,im),2)
+
   # dump alpha channel if it exists    
-  if(image.shape[2]>3):
-    image=image[:,:,0:3]
+  if(im.shape[2]>3):
+    im=im[:,:,0:3]
 
-  image=image[:,:,[2,1,0]] #RGB to BGR
-  image=image-imagenet_mean
-  image=np.expand_dims(image,0)
-  print(image.shape)
+  #here need to average over 5 crops instead of one
+  imcropped=cropped_center(im,227,227)
 
 
-  #run initial classification
-  predict_values=sess.run(out, feed_dict={x: image})
+  imcropped=imcropped[:,:,[2,1,0]] #RGB to BGR 
+  imcropped=imcropped-imagenet_mean
+  imcropped=np.expand_dims(imcropped,0)
+
+  print(imcropped[0].shape)
+
+
   
 
-  original_label=np.argmax(predict_values)
 
-  print('at start: classindex: ' + str(original_label)+ '\nclasslabel: '+ cls[np.argmax(predict_values)]+'\nscore:'+ str(np.max(predict_values)))
-  print(predict_values[0,target_label],predict_values[0,original_label])
-  print(len(predict_values))
+  flag = False
 
+  # mean4 = np.expand_dims(imagenet_mean,0)
+  count = 0
 
+  while(True):
+       #run initial classification
+    retlist =sess.run([out,tfgradients], feed_dict={x: imcropped})
+    predict_values = retlist[0][0]
+    grad = retlist[1][0]
+    print(np.array(predict_values).shape)
+    print(np.array(grad).shape)
+    temp = imcropped + cstepsize * grad
+    grad[temp+imagenet_mean > 254] = 0
+    grad[temp+imagenet_mean < 1] = 0
+    imcropped += cstepsize * grad
 
+    if(flag==False):
+        origlabel=np.argmax(predict_values)
+        flag = True
+    # newlabel = cls[np.argmax(predict_values)]
+    newlabel = np.argmax(predict_values)
+    print (predict_values[chosenlb])
+    print ('at start: classindex: ',origlabel, 'classlabel: ', newlabel,'score',np.max(predict_values))
+    if(newlabel==chosenlb):
+      count += 1
+      # check rounded label
+      if(count>10):
+        break
+  #print(predict_values[0,chosenlb],predict_values[0,origlabel])
 
-  img = Image.fromarray(image)
-  img.save('C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\modified_img0.png')
-  img.show()
+  newImage = Image.fromarray((np.uint8(imcropped[0]+imagenet_mean)[:,:,[2,1,0]]))
+  newImage.save(cls[newlabel]+".png")
+
 
 if __name__=='__main__':
   run2()
+  #m=np.load('./ilsvrc_2012_mean.npy')
+  #print(np.mean(np.mean(m,2),1))
+
+
