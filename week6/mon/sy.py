@@ -41,9 +41,9 @@ def preproc_py2(imname,shorterside):
 def cropped_center(im,hsize,wsize):
   h=im.shape[0]
   w=im.shape[1]
-  
-  cim=im[(h-hsize)/2:(h-hsize)/2+hsize,(w-wsize)/2:(w-wsize)/2+wsize,:]
-  
+
+  cim = im[int((h - hsize) / 2):int((h - hsize) / 2 + hsize), int((w - wsize) / 2):int((w - wsize) / 2 + wsize), :]
+
   return cim
 
 
@@ -118,9 +118,9 @@ def getout():
 def run2():
 
   cstepsize=40.0
-  chosenlb=955 #850
+  chosenlb=956 #850
 
-  imname='/Users/siyuanw/Desktop/ai_week5/somesimpleimages/mrshout2.jpg'
+  imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\mrshout2.jpg'
 
   imagenet_mean = np.array([104., 117., 123.], dtype=np.float32) 
   cls=get_classes()
