@@ -23,6 +23,8 @@ class AlexNet(object):
 
     if weights_path == 'DEFAULT':
       self.WEIGHTS_PATH = 'C:\\Users\H\PycharmProjects\AI_Projects\week5\crop\largefiles\\bvlc_alexnet.npy'
+      # self.WEIGHTS_PATH = 'C:\\Users\H\PycharmProjects\AI_Projects\week5\crop\largefiles\\bvlc_alexnet.npy'
+
     else:
       self.WEIGHTS_PATH = weights_path
 
