@@ -19,7 +19,7 @@ def preproc_py2(imname, shorterside):
     pilimg = Image.open(imname)
     w, h = pilimg.size
 
-    print(w, h)
+    print((w, h))
 
     if w > h:
         longerside = np.int32(math.floor(float(shorterside) / float(h) * w))
@@ -123,10 +123,8 @@ def run2():
     net.load_initial_weights(sess)
 
     im = preproc_py2(imname, 227)
-    print
-    im.shape
-    print
-    imname
+    print(im.shape)
+    print(imname)
 
     # convert grey to color
     if (im.ndim < 3):
@@ -149,8 +147,8 @@ def run2():
 
     origlabel = np.argmax(predict_values)
 
-    print('at start: classindex: ', origlabel, 'classlabel: ', cls[np.argmax(predict_values)], 'score',
-          np.max(predict_values))
+    print(('at start: classindex: ', origlabel, 'classlabel: ', cls[np.argmax(predict_values)], 'score',
+          np.max(predict_values)))
     # print(predict_values[0,chosenlb],predict_values[0,origlabel])
 
 
