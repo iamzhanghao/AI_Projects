@@ -120,7 +120,7 @@ def run2():
   cstepsize=40.0
   chosenlb=956 #850
 
-  imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\mrshout2.jpg'
+  imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\\banana.jpg'
 
   imagenet_mean = np.array([104., 117., 123.], dtype=np.float32) 
   cls=get_classes()
