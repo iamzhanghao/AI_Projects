@@ -12,11 +12,13 @@ Author: Frederik Kratzert
 contact: f.kratzert(at)gmail.com
 """
 import os
+from datetime import datetime
+
 import numpy as np
 import tensorflow as tf
-from datetime import datetime
-from alexnet import AlexNet
 from datagenerator_mod_pil import ImageDataGenerator_r
+
+from week6.alexnet import AlexNet
 
 """
 Configuration settings
