@@ -1,3 +1,6 @@
+import copy
+
+
 class Flight:
     def __init__(self, start_city, start_time, end_city, end_time):
         self.start_city = start_city
@@ -30,47 +33,78 @@ flightDB = [Flight('Rome', 1, 'Paris', 4),
             Flight('Istanbul', 10, 'Constantinople', 10)]
 
 
-class Itinerary:
-    itinerary = []
-
-    def add(self, flight):
-        self.itinerary.append(flight)
-
-
 class State:
     time = None
     city = None
-    itinerary = None
+    itinerary = []
 
-    def __init__(self, time, city, itinerary=None):
-        pass
-
-    def get_state(self):
-        return self
+    def __init__(self, time, city, itinerary=[]):
+        self.time = time
+        self.city = city
+        self.itinerary = itinerary
 
     def is_same(self, other):
-        if len(self.itinerary.get_itinerary()) != len(other.get_state().itinerary.itinerary):
-            return False
-        else:
-            for i in range(len(self.itinerary.itinerary_list)):
-                if self.itinerary.itinerary_list[i] != other.get_state().itinerary.itinerary[i]:
-                    return False
-        if self.time != other.get_state.time:
-            return False
+        return self.time == other.time and self.city == other.time
 
-        if self.city != other.get_state.city:
-            return False
-
-        return True
+    def get_Itinerary(self):
+        return copy.deepcopy(self.itinerary)
 
 
-# Define a procedure find_itinerary that returns a plan, in the
-# form of a sequence of (city, time) pairs, that represents a legal sequence
-# of flights (found in FlightDB) from start_city to end_city
-# before a specified deadline.
+def bfs(frontier, explored_state, end_city, deadline):
+    if len(frontier) == 0:
+        return None
+
+    if frontier[0].city == end_city:
+        return frontier[0].itinerary
+    else:
+        current_state = frontier.pop(0)
+        for flight in flightDB:
+            if flight.start_city == current_state.city and flight.start_time >= current_state.time and flight.end_time <= deadline \
+                    and (flight.end_city, flight.end_time) not in explored_state:
+                # print("add",flight)
+                new_state = State(flight.end_time, flight.end_city, current_state.get_Itinerary())
+                new_state.itinerary.append(flight)
+                frontier.append(new_state)
+                explored_state.add((flight.end_city, flight.end_time))
+
+    return bfs(frontier, explored_state, end_city, deadline)
+
+
 def find_itinerary(start_city, start_time, end_city, deadline):
     current_city = start_city
     current_time = start_time
-    frontier = []
+    frontier = [State(current_time, current_city)]
+    explored_state = set()
+    explored_state.add((current_city, current_time))
 
-    pass
+    return bfs(frontier, explored_state, end_city, deadline)
+
+
+print("\nUsing find_itinerary")
+
+itinerary = find_itinerary('Rome', 1, 'Constantinople', 10)
+
+if itinerary is not None:
+    for flight in itinerary:
+        print(flight)
+else:
+    print("No Solution")
+
+
+def find_shortest_itinerary(start_city, end_city):
+    for i in range(1, 12):
+        itinerary = find_itinerary(start_city, 1, end_city, i)
+        if itinerary is not None:
+            return itinerary
+
+    return None
+
+
+print("\nUsing find_shortest_itinerary")
+itinerary = find_shortest_itinerary('Rome', 'London')
+
+if itinerary is not None:
+    for flight in itinerary:
+        print(flight)
+else:
+    print("No Solution")
