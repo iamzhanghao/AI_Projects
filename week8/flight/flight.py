@@ -100,6 +100,8 @@ def find_shortest_itinerary(start_city, end_city):
     return None
 
 
+### METHOD 1 ###
+# This guarantee to return the soonest flight
 print("\nUsing find_shortest_itinerary")
 itinerary = find_shortest_itinerary('Rome', 'London')
 
@@ -108,3 +110,34 @@ if itinerary is not None:
         print(flight)
 else:
     print("No Solution")
+
+
+### METHOD 2 ###
+# Reverse look up
+def reverse_shortest_itinerary(start_city,end_city):
+    itineraries = []
+    for i in range(11, 0, -1):
+        itinerary = find_itinerary(start_city, 1, end_city, i)
+        if itinerary is not None:
+            itineraries.append(itinerary)
+
+    if len(itineraries)!= 0:
+        return itineraries[0]
+    else:
+        return None
+
+print("\nUsing reverse_shortest_itinerary")
+itinerary = reverse_shortest_itinerary('Rome', 'London')
+
+if itinerary is not None:
+    for flight in itinerary:
+        print(flight)
+else:
+    print("No Solution")
+
+
+
+
+
+
+
