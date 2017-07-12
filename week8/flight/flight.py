@@ -49,7 +49,7 @@ class State:
         return self
 
     def is_same(self, other):
-        if len(self.itinerary.get_itinerary()) != len(other.get_state().itinerary.itinerary):
+        if len(self.itinerary.get_itinerary()) != len(other. ().itinerary.itinerary):
             return False
         else:
             for i in range(len(self.itinerary.itinerary_list)):

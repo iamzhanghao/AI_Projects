@@ -18,7 +18,7 @@ import numpy as np
 import tensorflow as tf
 from datagenerator_mod_pil import ImageDataGenerator_r
 
-from week6.alexnet import AlexNet
+from week6.mon.alexnet import AlexNet
 
 """
 Configuration settings
