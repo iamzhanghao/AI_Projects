@@ -1,9 +1,16 @@
 import pprint
+
 pp = pprint.PrettyPrinter(indent=5)
 
 
-def get_data(split="1", size="40X", platform="Mac", data_dir="/Users/zhanghao/Projects/Project_Dir/",
-             project_Dir="/Users/zhanghao/Projects/AI_Projects/Brc_Project/breakhissplits_v2/train_val_test_60_12_28/shuffled/split"):
+def get_data(split="1", size="40X", platform="Mac"):
+    if platform == "Mac":
+        data_dir = "/Users/zhanghao/Projects/Project_Dir/"
+        project_Dir = "/Users/zhanghao/Projects/AI_Projects/Brc_Project/breakhissplits_v2/train_val_test_60_12_28/shuffled/split"
+    else:
+        data_dir = "/Users/zhanghao/Projects/Project_Dir/"
+        project_Dir = "/Users/zhanghao/Projects/AI_Projects/Brc_Project/breakhissplits_v2/train_val_test_60_12_28/shuffled/split"
+
     data_set = {"train": [],
                 "val": [],
                 "test": []}
@@ -15,9 +22,9 @@ def get_data(split="1", size="40X", platform="Mac", data_dir="/Users/zhanghao/Pr
             if platform == "Windows":
                 line.replace("/", "\\")
             res = line.split(" ")
-            if len(res)==2:
-                data_set[set].append((data_dir+res[0], res[1]))
+            if len(res) == 2:
+                data_set[set].append((data_dir + res[0], res[1]))
             line = f.readline()
     return data_set
 
-pp.pprint(get_data())
+get_data(split="2", size="100X", platform="Mac")
