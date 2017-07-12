@@ -41,7 +41,6 @@ def is_valid_word(word):
 charset = "zyxwvutsrqponmlkjihgfedcba"
 
 
-
 def dfs(frontier, explored, goal):
     if len(frontier) == 0:
         return "No Solution"
@@ -64,7 +63,6 @@ def dfs(frontier, explored, goal):
                 new_word_frontier = Word(old_word_frontier.get_current(), history)
                 new_word_frontier.change(new_word)
                 frontier.append(new_word_frontier)
-
 
     return dfs(frontier, explored, goal)
 
