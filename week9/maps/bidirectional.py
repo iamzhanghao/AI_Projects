@@ -1,5 +1,6 @@
-from search import *
-from highways import *
+from week9.maps.search import *
+
+from week9.maps.highways import *
 import time
 
 # An undirected graph of highways in USA.  The cost is defined using
@@ -64,14 +65,14 @@ def compare_searchers(problems, header,
                       searchers=[breadth_first_search]):
     def do(searcher, problem):
         p = InstrumentedProblem(problem)
-        print 'Starting', name(searcher)
+        print('Starting', name(searcher))
         t0 = time.time()
         if name(searcher) in ('astar_search', 'greedy_best_first_graph_search'):
             searcher(p, h)
         else:
             searcher(p)
         t1 = time.time()
-        print 'Completed', name(searcher)
+        print('Completed', name(searcher))
         return p, t1-t0
     table = [[name(s)] + [do(s, p) for p in problems] for s in searchers]
     print_table(table, header)
