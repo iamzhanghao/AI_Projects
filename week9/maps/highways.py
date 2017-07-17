@@ -1,5 +1,6 @@
 import zlib
-from math import acos,cos,sin,pi,atan2
+from math import acos, cos, sin, pi, atan2
+
 
 class Location:
     def __init__(self, id_number, longitude, latitude, name):
@@ -8,16 +9,19 @@ class Location:
         self.latitude = latitude
         self.name = name
 
+
 class Link:
     def __init__(self, node_a, node_b, name):
         self.begin = node_a
         self.end = node_b
         self.name = name
 
-location_from_name = eval(zlib.decompress(open('location_from_name.z','rb').read()))
-location_from_ID = eval(zlib.decompress(open('location_from_ID.z','rb').read()))
-neighbors = eval(zlib.decompress(open('neighbors.z','rb').read()))
-links = eval(zlib.decompress(open('links.z','rb').read()))
+
+location_from_name = eval(zlib.decompress(open('location_from_name.z', 'rb').read()))
+location_from_ID = eval(zlib.decompress(open('location_from_ID.z', 'rb').read()))
+neighbors = eval(zlib.decompress(open('neighbors.z', 'rb').read()))
+links = eval(zlib.decompress(open('links.z', 'rb').read()))
+
 
 def to_kml(path):
     kml = open('path.kml', mode='w')
@@ -30,7 +34,7 @@ def to_kml(path):
         <tessellate>1</tessellate>
         <coordinates>
 """)
-    kml.writelines("%f,%f\n" % (loc.longitude,loc.latitude) 
+    kml.writelines("%f,%f\n" % (loc.longitude, loc.latitude)
                    for loc in [location_from_ID[i] for i in path])
     kml.write("""</coordinates>
       </LineString>
@@ -41,23 +45,45 @@ def to_kml(path):
     kml.close()
 
 
-
 def locations_matching_name(state, name):
     name = name or ''
-    return [(i,location_from_name[i].id_number) for i in location_from_name if i[:2]==state and name in i[2:]]
+    return [(i, location_from_name[i].id_number) for i in location_from_name if i[:2] == state and name in i[2:]]
+
 
 def distance(id1, id2):
     """Returns the approximate distance between loc1 and loc2 in miles, 
     taking into account the Earth's curvature."""
     loc1 = location_from_ID[id1]
     loc2 = location_from_ID[id2]
-    phi1 = loc1.latitude*pi/180.
-    theta1 = loc1.longitude*pi/180.
-    phi2 = loc2.latitude*pi/180.
-    theta2 = loc2.longitude*pi/180.
-    cospsi = sin(phi1)*sin(phi2) + cos(phi1)*cos(phi2)*cos(theta2-theta1)
-    sinpsi = ((sin(theta1)*cos(phi1)*sin(phi2) - sin(theta2)*cos(phi2)*sin(phi1))**2 +\
-              (cos(theta2)*cos(phi2)*sin(phi1) - cos(theta1)*cos(phi1)*sin(phi2))**2 +\
-              (cos(phi1)*cos(phi2)*sin(theta2-theta1))**2)**0.5
-    return atan2(sinpsi,cospsi) * 3958 # miles
+    phi1 = loc1.latitude * pi / 180.
+    theta1 = loc1.longitude * pi / 180.
+    phi2 = loc2.latitude * pi / 180.
+    theta2 = loc2.longitude * pi / 180.
+    cospsi = sin(phi1) * sin(phi2) + cos(phi1) * cos(phi2) * cos(theta2 - theta1)
+    sinpsi = ((sin(theta1) * cos(phi1) * sin(phi2) - sin(theta2) * cos(phi2) * sin(phi1)) ** 2 + \
+              (cos(theta2) * cos(phi2) * sin(phi1) - cos(theta1) * cos(phi1) * sin(phi2)) ** 2 + \
+              (cos(phi1) * cos(phi2) * sin(theta2 - theta1)) ** 2) ** 0.5
+    return atan2(sinpsi, cospsi) * 3958  # miles
+
+
+# print(len(location_from_ID))
+# There are 90415 unique locations in the database
+
+# print(len(location_from_name))
+# There are 22328 location names in the database
+
+# There are 125302 links in the database
+# print(len(links))
+
+# What is the ID number of the location whose name is ’ILPEORIA CBD’?
+# ans: 17001455
+# print(location_from_name['ILPEORIA CBD'].id_number)
+
+# What is the name of the location whose ID number is 8000302
+# ans: COBOULDER E
+# print(location_from_ID[8000302].name)
+
+# What elements are in the Python list containing the IDs of the neighbors of location 23000331 ?
+# ans: [23000323, 23000326, 23000333]
+# print(neighbors[23000331])
 
