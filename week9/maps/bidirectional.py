@@ -11,7 +11,6 @@ import time
 # NOTE THAT CREATING THIS GRAPH TAKES A BIT OF TIME, so do it only
 # once if already defined in the environment.
 try:
-    # See if it is defined
     usa
 except:
     # If it isn't, evaluate it
@@ -21,14 +20,14 @@ except:
 
 class MyFIFOQueue(FIFOQueue):
     def getNode(self, state):
-        '''Returns node in queue with matching state'''
+        """Returns node in queue with matching state"""
         for i in range(self.start, len(self.A)):
             if self.A[i].state == state:
                 return self.A[i]
 
     def __contains__(self, node):
-        '''Returns boolean if there is node in queue with matching
-        state.  The implementation in utils.py is very slow.'''
+        """Returns boolean if there is node in queue with matching
+        state.  The implementation in utils.py is very slow."""
         for i in range(self.start, len(self.A)):
             if self.A[i].state == node.state:
                 return True
@@ -46,20 +45,67 @@ def bidirectional_search(problem):
     # You will need to (a) UNDERSTAND and (b) MODIFY this to do
     # bidirectional search.
 
-    node = Node(problem.initial)
-    if problem.goal_test(node.state):
-        return node
-    frontier = MyFIFOQueue()
-    frontier.append(node)
-    explored = set()
-    while frontier:
-        node = frontier.pop()
-        explored.add(node.state)
-        for child in node.expand(problem):
-            if child.state not in explored and child not in frontier:
-                if problem.goal_test(child.state):
-                    return child
-                frontier.append(child)
+
+    # """Forward Search"""
+    # forward_node = Node(problem.initial)
+    # if problem.goal_test(forward_node.state):
+    #     return forward_node
+    # forward_frontier = MyFIFOQueue()
+    # forward_frontier.append(forward_node)
+    # forward_explored = set()
+    # while forward_frontier:
+    #     forward_node = forward_frontier.pop()
+    #     forward_explored.add(forward_node.state)
+    #     for child in forward_node.expand(problem):
+    #         if child.state not in forward_explored and child not in forward_frontier:
+    #             if problem.goal_test(child.state):
+    #                 return child
+    #             forward_frontier.append(child)
+
+    """Forward Search"""
+    forward_node = Node(problem.initial)
+    backward_node = Node(problem.goal)
+    if problem.goal_test(forward_node.state):
+        return forward_node
+    else:
+        forward_frontier = MyFIFOQueue()
+        forward_frontier.append(forward_node)
+        forward_explored = set()
+
+        backward_frontier = MyFIFOQueue()
+        backward_frontier.append(backward_node)
+        backward_explored = set()
+
+        while forward_frontier and backward_frontier:
+            forward_node = forward_frontier.pop()
+            backward_node = backward_frontier.pop()
+
+            forward_explored.add(forward_node.state)
+            backward_explored.add(backward_node.state)
+
+            for child in forward_node.expand(problem):
+                if child.state not in forward_explored and child not in forward_frontier:
+                    forward_frontier.append(child)
+
+            for child in backward_node.expand(problem):
+                if child.state not in backward_explored and child not in backward_frontier:
+                    backward_frontier.append(child)
+
+
+
+            common = set.intersection(forward_explored,backward_explored)
+            if len(common) != 0:
+                mid = breadth_first_search(GraphProblem(forward_node.state,backward_node.state,usa))
+                ans = []
+                for node in forward_node.path():
+                    ans.append(node.state)
+                for node in mid.path():
+                    ans.append(node.state)
+                for node in backward_node.path()[::-1]:
+                    ans.append(node.state)
+                return ans
+
+
     return None
 
 
@@ -83,9 +129,15 @@ def compare_searchers(problems, header,
     print_table(table, header)
 
 
-def test_map():
+# As a test, we will use uniform_cost_search to find a path from a place near the geographic center of the U.S. (
+# Smith Center, KS; ID number 20000071), to Cambridge (ID number 25000502).
+
+problem = GraphProblem(20000071, 25000502, usa)
+
+
+def compare():
     heuristic = lambda x: distance(x.state, 25000502)
-    compare_searchers(problems=[GraphProblem(20000071, 25000502, usa)],
+    compare_searchers(problems=[problem],
                       h=heuristic,
                       searchers=[breadth_first_search,
                                  bidirectional_search,
@@ -94,4 +146,17 @@ def test_map():
                       header=['Searcher', 'USA(Smith Center, Cambridge)'])
 
 
-test_map()
+# you can create an instance of GraphProblem class from the UndirectedGraph named usa, and additionally startpoint
+# and endpoint. GraphProblem is a derived class of the class Problem, and you can use any search algorithm to run it.
+
+
+
+
+# map()
+ans = bidirectional_search(problem)
+path_objs = ans.path()
+path = []
+for path_obj in path_objs:
+    path.append(path_obj.state)
+print(path)
+to_kml(path)

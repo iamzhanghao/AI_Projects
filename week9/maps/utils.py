@@ -9,6 +9,7 @@ import random
 import math
 import functools
 
+
 # ______________________________________________________________________________
 # Functions on Sequences and Iterables
 
@@ -185,7 +186,7 @@ def inverse_matrix(X):
     assert len(X[0]) == 2
     det = X[0][0] * X[1][1] - X[0][1] * X[1][0]
     assert det != 0
-    inv_mat = scalar_matrix_product(1.0/det, [[X[1][1], -X[0][1]], [-X[1][0], X[0][0]]])
+    inv_mat = scalar_matrix_product(1.0 / det, [[X[1][1], -X[0][1]], [-X[1][0], X[0][0]]])
 
     return inv_mat
 
@@ -218,7 +219,7 @@ def rounder(numbers, d=4):
     if isinstance(numbers, (int, float)):
         return round(numbers, d)
     else:
-        constructor = type(numbers)     # Can be list, set, tuple, etc.
+        constructor = type(numbers)  # Can be list, set, tuple, etc.
         return constructor(rounder(n, d) for n in numbers)
 
 
@@ -257,7 +258,7 @@ def sigmoid_derivative(value):
 
 def sigmoid(x):
     """Return activation value of x with sigmoid function"""
-    return 1/(1 + math.exp(-x))
+    return 1 / (1 + math.exp(-x))
 
 
 def step(x):
@@ -267,7 +268,7 @@ def step(x):
 
 def gaussian(mean, st_dev, x):
     """Given the mean and standard deviation of a distribution, it returns the probability of x."""
-    return 1/(math.sqrt(2*math.pi)*st_dev)*math.e**(-0.5*(float(x-mean)/st_dev)**2)
+    return 1 / (math.sqrt(2 * math.pi) * st_dev) * math.e ** (-0.5 * (float(x - mean) / st_dev) ** 2)
 
 
 try:  # math.isclose was added in Python 3.5; but we might be in 3.4
@@ -276,7 +277,6 @@ except ImportError:
     def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
         """Return true if numbers a and b are close to each other."""
         return abs(a - b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
-
 
 # ______________________________________________________________________________
 # Grid Functions
@@ -309,7 +309,7 @@ def distance_squared(a, b):
     """The square of the distance between two (x, y) points."""
     xA, yA = a
     xB, yB = b
-    return (xA - xB)**2 + (yA - yB)**2
+    return (xA - xB) ** 2 + (yA - yB) ** 2
 
 
 def vector_clip(vector, lowest, highest):
@@ -375,8 +375,8 @@ def print_table(table, header=None, sep='   ', numfmt='{}'):
              for row in table]
 
     sizes = list(
-            map(lambda seq: max(map(len, seq)),
-                list(zip(*[map(str, row) for row in table]))))
+        map(lambda seq: max(map(len, seq)),
+            list(zip(*[map(str, row) for row in table]))))
 
     for row in table:
         print(sep.join(getattr(
@@ -516,18 +516,20 @@ class Expr(object):
                 and self.op == other.op
                 and self.args == other.args)
 
-    def __hash__(self): return hash(self.op) ^ hash(self.args)
+    def __hash__(self):
+        return hash(self.op) ^ hash(self.args)
 
     def __repr__(self):
         op = self.op
         args = [str(arg) for arg in self.args]
-        if op.isidentifier():       # f(x) or f(x, y)
+        if op.isidentifier():  # f(x) or f(x, y)
             return '{}({})'.format(op, ', '.join(args)) if args else op
-        elif len(args) == 1:        # -x or -(x + 1)
+        elif len(args) == 1:  # -x or -(x + 1)
             return op + args[0]
-        else:                       # (x - y)
+        else:  # (x - y)
             opp = (' ' + op + ' ')
             return '(' + opp.join(args) + ')'
+
 
 # An 'Expression' is either an Expr or a Number.
 # Symbol is not an explicit type; it is any Expr with 0 args.
@@ -562,11 +564,13 @@ def arity(expression):
     else:  # expression is a number
         return 0
 
+
 # For operators that are not defined in Python, we allow new InfixOps:
 
 
 class PartialExpr:
     """Given 'P |'==>'| Q, first form PartialExpr('==>', P), then combine with Q."""
+
     def __init__(self, op, lhs):
         self.op, self.lhs = op, lhs
 
@@ -609,6 +613,7 @@ class defaultkeydict(collections.defaultdict):
     >>> d = defaultkeydict(len); d['four']
     4
     """
+
     def __missing__(self, key):
         self[key] = result = self.default_factory(key)
         return result
@@ -618,6 +623,7 @@ class hashabledict(dict):
     """Allows hashing by representing a dictionary as tuple of key:value pairs
        May cause problems as the hash value may change during runtime
     """
+
     def __tuplify__(self):
         return tuple(sorted(self.items()))
 
@@ -649,7 +655,6 @@ class hashabledict(dict):
 
 
 class Queue:
-
     """Queue is an abstract class/interface. There are three types:
         Stack(): A Last In First Out Queue.
         FIFOQueue(): A First In First Out Queue.
@@ -676,40 +681,68 @@ def Stack():
     return []
 
 
-class FIFOQueue(Queue):
+# class FIFOQueue(Queue):
+#
+#     """A First-In-First-Out Queue."""
+#
+#     def __init__(self, maxlen=None, items=None):
+#         if items is None:
+#             items = []
+#         self.queue = collections.deque(items, maxlen)
+#
+#     def append(self, item):
+#         if not self.queue.maxlen or len(self.queue) < self.queue.maxlen:
+#             self.queue.append(item)
+#         else:
+#             raise Exception('FIFOQueue is full')
+#
+#     def extend(self, items):
+#         if not self.queue.maxlen or len(self.queue) + len(items) <= self.queue.maxlen:
+#             self.queue.extend(items)
+#         else:
+#             raise Exception('FIFOQueue max length exceeded')
+#
+#     def pop(self):
+#         if len(self.queue) > 0:
+#             return self.queue.popleft()
+#         else:
+#             raise Exception('FIFOQueue is empty')
+#
+#     def __len__(self):
+#         return len(self.queue)
+#
+#     def __contains__(self, item):
+#         return item in self.queue
 
+class FIFOQueue(Queue):
     """A First-In-First-Out Queue."""
 
-    def __init__(self, maxlen=None, items=[]):
-        self.queue = collections.deque(items, maxlen)
+    def __init__(self):
+        self.A = []
+        self.start = 0
 
     def append(self, item):
-        if not self.queue.maxlen or len(self.queue) < self.queue.maxlen:
-            self.queue.append(item)
-        else:
-            raise Exception('FIFOQueue is full')
-
-    def extend(self, items):
-        if not self.queue.maxlen or len(self.queue) + len(items) <= self.queue.maxlen:
-            self.queue.extend(items)
-        else:
-            raise Exception('FIFOQueue max length exceeded')
-
-    def pop(self):
-        if len(self.queue) > 0:
-            return self.queue.popleft()
-        else:
-            raise Exception('FIFOQueue is empty')
+        self.A.append(item)
 
     def __len__(self):
-        return len(self.queue)
+        return len(self.A) - self.start
+
+    def extend(self, items):
+        self.A.extend(items)
+
+    def pop(self):
+        e = self.A[self.start]
+        self.start += 1
+        if self.start > 5 and self.start > len(self.A) / 2:
+            self.A = self.A[self.start:]
+            self.start = 0
+        return e
 
     def __contains__(self, item):
-        return item in self.queue
+        return item in self.A[self.start:]
 
 
 class PriorityQueue(Queue):
-
     """A queue in which the minimum (or maximum) element (as determined by f and
     order) is returned first. If order is min, the item with minimum f(x) is
     returned first; if order is max, then it is the item with maximum f(x).
