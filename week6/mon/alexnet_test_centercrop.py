@@ -6,8 +6,8 @@ from PIL import Image
 sys.path.insert(0, '.')
 sys.path.insert(0, '../imagenetdata')
 
-from week6.getimagenetclasses import *
-from week6.alexnet import *
+from week6.mon.getimagenetclasses import *
+from week6.mon.alexnet import *
 
 
 def preproc_py2(imname, shorterside):
@@ -105,8 +105,8 @@ def getout():
 def run2():
     cstepsize = 20.0
     target_label = 949
-    imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\img0.png'
-    imname = 'C:\\Users\H\Desktop\\1.png'
+    imname = 'C:\\Users\Hao\PycharmProjects\AI_Projects\week6\mon\imgs\img0.png'
+    imname = 'C:\\Users\Hao\Desktop\\1.png'
 
 
     imagenet_mean = np.array([104., 117., 123.], dtype=np.float32)

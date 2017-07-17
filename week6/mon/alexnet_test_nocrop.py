@@ -2,13 +2,12 @@ import math
 import sys
 
 from PIL import Image
-from numpy import int32
 
 sys.path.insert(0, '.')
 sys.path.insert(0, '../imagenetdata')
 
-from week6.getimagenetclasses import *
-from week6.alexnet import *
+from week6.mon.getimagenetclasses import *
+from week6.mon.alexnet import *
 
 
 def preproc_py2(imname, shorterside):
@@ -106,7 +105,7 @@ def getout():
 def run2():
     cstepsize = 20.0
     chosenlb = 949
-    imname = '/home/binder/entwurf6/codes/tfplay/ai/alexnet/blaimg.png'
+    imname = 'C:\\Users\Hao\Projects\AI_Projects\week6\mon\\banana.png'
 
     imagenet_mean = np.array([104., 117., 123.], dtype=np.float32)
     cls = get_classes()

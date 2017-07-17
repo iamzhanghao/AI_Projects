@@ -2,13 +2,12 @@ import math
 import sys
 
 from PIL import Image
-from numpy import int32
 
 sys.path.insert(0,'.')
 sys.path.insert(0,'../imagenetdata')
 
-from week6.getimagenetclasses import *
-from week6.alexnet import *
+from getimagenetclasses import *
+from alexnet import *
 
 def preproc_py2(imname,shorterside):
   
@@ -115,9 +114,9 @@ def getout():
 def run2():
 
   cstepsize=40.0
-  chosenlb=956 #850
+  chosenlb=954 #850
 
-  imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\\banana.jpg'
+  imname = 'C:\\Users\Hao\Projects\AI_Projects\week6\mon\imgs\\mrshout2.jpg'
 
   imagenet_mean = np.array([104., 117., 123.], dtype=np.float32) 
   cls=get_classes()
@@ -190,7 +189,7 @@ def run2():
     if(newlabel==chosenlb):
       count += 1
       # check rounded label
-      if(count>10):
+      if(count>1000):
         break
   #print(predict_values[0,chosenlb],predict_values[0,origlabel])
 
