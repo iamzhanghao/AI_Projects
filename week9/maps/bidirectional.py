@@ -80,6 +80,7 @@ def bidirectional_search(problem):
             forward_node = forward_frontier.pop()
             backward_node = backward_frontier.pop()
 
+
             forward_explored.add(forward_node.state)
             backward_explored.add(backward_node.state)
 
