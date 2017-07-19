@@ -24,28 +24,29 @@
 
 ### Hacked by LPK to be independent of SoaR
 
-from Tkinter import *
+from tkinter import *
 import math
+
 
 class Thing:
     pass
 
-class DrawingWindow:
 
+class DrawingWindow:
     def __init__(self, windowWidth, windowHeight, xMin, xMax, yMin, yMax,
-                 title, parent=None): 
-	self.title = title
+                 title, parent=None):
+        self.title = title
         # Make a window to draw on
-	if parent:	
+        if parent:
             self.parent = parent
             self.top = parent.getWindow(title)
-	else:
-            self.tk=Tk()
+        else:
+            self.tk = Tk()
             self.tk.withdraw()
-            self.top=Toplevel(self.tk)
+            self.top = Toplevel(self.tk)
             self.top.wm_title(title)
             self.top.protocol('WM_DELETE_WINDOW', self.top.destroy)
-	self.windowWidth = windowWidth
+        self.windowWidth = windowWidth
         self.windowHeight = windowHeight
         self.canvas = Canvas(self.top, width=self.windowWidth,
                              height=self.windowHeight, background="white")
@@ -67,34 +68,34 @@ class DrawingWindow:
 
     def scaleX(self, x):
         return self.xScale * (x - self.xMin)
-    
+
     def scaleY(self, y):
         return self.windowHeight - self.yScale * (y - self.yMin)
 
-    def drawPoint(self, x, y, color = "blue"):
+    def drawPoint(self, x, y, color="blue"):
         windowX = self.scaleX(x)
         windowY = self.scaleY(y)
-        return self.canvas.create_rectangle(windowX-1, windowY-1, windowX+1,
-                                     windowY+1, fill = color, outline = color)
+        return self.canvas.create_rectangle(windowX - 1, windowY - 1, windowX + 1,
+                                            windowY + 1, fill=color, outline=color)
 
-    def drawRobotWithNose(self, x, y, theta, color = "blue", size = 6):
-	rawx = math.cos(theta)
-	rawy = math.sin(theta)
-	hx, hy = 0.15, 0.0
-	noseX = x+rawx*hx-rawy*hy
-	noseY = y+rawy*hx+rawx*hy
-        return self.drawRobot(x,y,noseX,noseY,color=color,size=size)
+    def drawRobotWithNose(self, x, y, theta, color="blue", size=6):
+        rawx = math.cos(theta)
+        rawy = math.sin(theta)
+        hx, hy = 0.15, 0.0
+        noseX = x + rawx * hx - rawy * hy
+        noseY = y + rawy * hx + rawx * hy
+        return self.drawRobot(x, y, noseX, noseY, color=color, size=size)
 
-    def drawRobot(self, x, y, noseX, noseY,color = "blue", size = 8):
+    def drawRobot(self, x, y, noseX, noseY, color="blue", size=8):
         windowX = self.scaleX(x)
         windowY = self.scaleY(y)
-        hsize = int(size)/2   # For once, we want the int division!
-        return (self.canvas.create_rectangle(windowX-hsize, windowY-hsize,
-                                     windowX+hsize, windowY+hsize,
-                                     fill = color, outline = color), 
-        self.canvas.create_line(windowX, windowY,
-                                self.scaleX(noseX),self.scaleY(noseY),
-                                fill=color, width=2, arrow="last"))
+        hsize = int(size) / 2  # For once, we want the int division!
+        return (self.canvas.create_rectangle(windowX - hsize, windowY - hsize,
+                                             windowX + hsize, windowY + hsize,
+                                             fill=color, outline=color),
+                self.canvas.create_line(windowX, windowY,
+                                        self.scaleX(noseX), self.scaleY(noseY),
+                                        fill=color, width=2, arrow="last"))
 
     def drawText(self, x, y, label):
         windowX = self.scaleX(x)
@@ -102,42 +103,46 @@ class DrawingWindow:
         return self.canvas.create_text(windowX, windowY, text=label)
         # font="Arial 20",fill="#ff0000"
 
-
-    def drawRect(self, (x1,y1), (x2,y2), color = "black", outline = 'black'):
+    def drawRect(self, xxx_todo_changeme, xxx_todo_changeme1, color="black", outline='black'):
+        (x1, y1) = xxx_todo_changeme
+        (x2, y2) = xxx_todo_changeme1
         return self.canvas.create_rectangle(self.scaleX(x1), self.scaleY(y1),
                                             self.scaleX(x2), self.scaleY(y2),
-                                            fill = color,
-                                            outline = outline)
+                                            fill=color,
+                                            outline=outline)
 
-    def drawOval(self, (x1,y1), (x2,y2), color = "black"):
+    def drawOval(self, xxx_todo_changeme2, xxx_todo_changeme3, color="black"):
+        (x1, y1) = xxx_todo_changeme2
+        (x2, y2) = xxx_todo_changeme3
         return self.canvas.create_oval(self.scaleX(x1), self.scaleY(y1),
                                        self.scaleX(x2), self.scaleY(y2),
-                                       fill = color)
+                                       fill=color)
 
-    def drawLineSeg(self, x1, y1, x2, y2, color = "black", width = 2):
-        return self.canvas.create_line(self.scaleX(x1),self.scaleY(y1),
-                                       self.scaleX(x2),self.scaleY(y2),
-                                       fill = color,
-                                       width = width)
+    def drawLineSeg(self, x1, y1, x2, y2, color="black", width=2):
+        return self.canvas.create_line(self.scaleX(x1), self.scaleY(y1),
+                                       self.scaleX(x2), self.scaleY(y2),
+                                       fill=color,
+                                       width=width)
 
-    def drawUnscaledLineSeg(self, x1, y1, xproj, yproj, color = "black",
-                            width = 1):
-        return self.canvas.create_line(self.scaleX(x1),self.scaleY(y1),
-                                       self.scaleX(x1)+xproj,self.scaleY(y1)-yproj,
-                                       fill = color,
-                                       width = width)
+    def drawUnscaledLineSeg(self, x1, y1, xproj, yproj, color="black",
+                            width=1):
+        return self.canvas.create_line(self.scaleX(x1), self.scaleY(y1),
+                                       self.scaleX(x1) + xproj, self.scaleY(y1) - yproj,
+                                       fill=color,
+                                       width=width)
 
-    def drawUnscaledRect(self, x1, y1, xproj, yproj, color = "black"):
-        return self.canvas.create_rectangle(self.scaleX(x1)-xproj,
-                                            self.scaleY(y1)+yproj,
-                                            self.scaleX(x1)+xproj,
-                                            self.scaleY(y1)-yproj,
-                                            fill = color)
-            
-    def drawLine(self, (a,b,c), color = "black"):
+    def drawUnscaledRect(self, x1, y1, xproj, yproj, color="black"):
+        return self.canvas.create_rectangle(self.scaleX(x1) - xproj,
+                                            self.scaleY(y1) + yproj,
+                                            self.scaleX(x1) + xproj,
+                                            self.scaleY(y1) - yproj,
+                                            fill=color)
+
+    def drawLine(self, xxx_todo_changeme4, color="black"):
+        (a, b, c) = xxx_todo_changeme4
         if abs(b) < 0.001:
-            startX = self.scaleX(-c/a)
-            endX = self.scaleX(-c/a)
+            startX = self.scaleX(-c / a)
+            endX = self.scaleX(-c / a)
             startY = self.scaleY(self.yMin)
             endY = self.scaleY(self.yMax)
         else:
@@ -145,10 +150,10 @@ class DrawingWindow:
             startY = self.scaleY(- (a * self.xMin + c) / b)
             endX = self.scaleX(self.xMax)
             endY = self.scaleY(- (a * self.xMax + c) / b)
-        return self.canvas.create_line(startX, startY, endX, endY, fill = color)
+        return self.canvas.create_line(startX, startY, endX, endY, fill=color)
 
     def delete(self, thing):
         self.canvas.delete(thing)
-  
+
     def clear(self):
         self.canvas.delete("all")
