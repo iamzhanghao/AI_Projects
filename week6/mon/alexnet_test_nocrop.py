@@ -41,7 +41,7 @@ def cropped_center(im, hsize, wsize):
 
 
 def preproc(image):
-    '''
+    """
   filename_queue = tf.train.string_input_producer(
     tf.train.match_filenames_once("./images/*.jpg"))
 
@@ -54,7 +54,7 @@ def preproc(image):
   # filename which we are ignoring.
   _, image_file = image_reader.read(filename_queue)
 
-  '''
+  """
 
     height = tf.shape(image)[0]
     width = tf.shape(image)[1]

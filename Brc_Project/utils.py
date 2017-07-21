@@ -1,14 +1,16 @@
 import pprint
+import numpy as np
+from PIL import Image
 
 pp = pprint.PrettyPrinter(indent=5)
 
 
-def get_data(split="1", size="40X", platform="Mac"):
+def get_data(split="1", size="40X", platform="Windows"):
     if platform == "Mac":
         data_dir = "/Users/zhanghao/Projects/Project_Dir/"
         project_Dir = "/Users/zhanghao/Projects/AI_Projects/Brc_Project/breakhissplits_v2/train_val_test_60_12_28/shuffled/split"
     else:
-        data_dir = "E:\\"
+        data_dir = "D:\\"
         project_Dir = "C:\\Users\Hao\Projects\AI_Projects\Brc_Project\\breakhissplits_v2\\train_val_test_60_12_28\shuffled\split"
 
     data_set = {"train": [],
@@ -23,16 +25,23 @@ def get_data(split="1", size="40X", platform="Mac"):
         while line != "":
             line = line.replace("\n", "")
             if platform == "Windows":
-                line.replace("/", "\\")
+                line = line.replace("/", "\\")
             res = line.split(" ")
 
             if len(res) == 2:
-                if platform != "Mac":
-                    res[0].replace("/", "\\")
+                if platform == "Windows":
+                    res[0]=res[0].replace("/", '\\')
                 data_set[set].append((data_dir + res[0], res[1]))
             line = f.readline()
     return data_set
 
+def read_img(path):
+    print("Read File "+path)
+    img = Image.open(path)
+    img_arr = np.array(img)
+    return img_arr
 
-data = get_data(split="2", size="100X", platform="Windows")
-pp.pprint(data)
+
+# #
+# data = get_data(split="2", size="100X", platform="Windows")
+# pp.pprint(data)

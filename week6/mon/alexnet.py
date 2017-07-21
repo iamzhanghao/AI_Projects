@@ -8,7 +8,7 @@ class AlexNet(object):
     """
     Inputs:
     - x: tf.placeholder, for the input images
-    - keep_prob: tf.placeholder, for the dropout rate
+    - keep_prob: tf.placeholder, for the dropout rate!
     - num_classes: int, number of classes of the new dataset
     - skip_layer: list of strings, names of the layers you want to reinitialize
     - weights_path: path string, path to the pretrained weights,
