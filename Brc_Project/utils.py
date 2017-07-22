@@ -30,17 +30,35 @@ def get_data(split="1", size="40X", platform="Windows"):
 
             if len(res) == 2:
                 if platform == "Windows":
-                    res[0]=res[0].replace("/", '\\')
-                data_set[set].append((data_dir + res[0], res[1]))
+                    res[0] = res[0].replace("/", '\\')
+
+                if res[1] == '0':
+                    data_set[set].append((data_dir + res[0], [1, 0]))
+                if res[1] == '1':
+                    data_set[set].append((data_dir + res[0], [0, 1]))
+
             line = f.readline()
     return data_set
 
-def read_img(path):
-    print("Read File "+path)
+
+def centeredCrop(img, new_height, new_width):
+    width = np.size(img, 1)
+    height = np.size(img, 0)
+
+    left = np.ceil((width - new_width) / 2.)
+    top = np.ceil((height - new_height) / 2.)
+    right = np.floor((width + new_width) / 2.)
+    bottom = np.floor((height + new_height) / 2.)
+    cImg = img.crop((left, top, right, bottom))
+    return cImg
+
+
+def read_img(path, crop=64):
+    print("Read File " + path)
     img = Image.open(path)
+    img = centeredCrop(img, crop, crop)
     img_arr = np.array(img)
     return img_arr
-
 
 # #
 # data = get_data(split="2", size="100X", platform="Windows")
