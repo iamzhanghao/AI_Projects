@@ -1,8 +1,11 @@
+
 from Brc_Project.utils import *
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import time
+from datetime import timedelta
 
-data = get_data(split="2", size="100X", platform="Windows")
+dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\Brc_Project\saved_dataset\dataset1.npy")
 
 # Convolution Layer 1.
 filter_size1 = 5  # Convolution filters are 5 x 5 pixels.
@@ -34,11 +37,6 @@ num_channels = 3
 
 # Number of classes, one class for each of 10 digits.
 num_classes = 2
-
-''' Testing Only'''
-im_path = data['test'][0][0]
-img = read_img(im_path, crop=img_size)
-''' Helper Functions'''
 
 
 def plot_images(img):
@@ -170,61 +168,126 @@ def new_conv_layer(layer_in,  # The previous layer.
 ''' TensorFlow Graphs'''
 
 
-def create():
-    # Image flat
-    x = tf.placeholder(tf.float32, shape=[None, img_size_flat], name='x')
-    # Actual Image
-    x_image = tf.reshape(x, [-1, img_size, img_size, num_channels])
-    # print(x_image.shape)
+# # Image flat
+# x = tf.placeholder(tf.float32, shape=[None, img_size_flat], name='x')
+# # Actual Image
+# x_image = tf.reshape(x, [-1, img_size, img_size, num_channels])
+# # print(x_image.shape)
 
-    y_true = tf.placeholder(tf.float32, shape=[None, num_classes], name='y_true')
-    # print(y_true.shape)
-    y_true_cls = tf.argmax(y_true, dimension=1)
+# Image flat
+# Actual Image
+x_image = tf.placeholder(tf.float32,shape=[None,img_size,img_size,num_channels],name='x_image')
+# print(x_image.shape)
 
-    # Convolution Layer 1
-    layer_conv1, weights_conv1, biases_conv1 = new_conv_layer(layer_in=x_image,
-                                                              num_input_channels=num_channels,
-                                                              filter_size=filter_size1,
-                                                              num_filters=num_filters1,
-                                                              pooling='max',
-                                                              stddev=0.0001, )
+y_true = tf.placeholder(tf.float32, shape=[None, num_classes], name='y_true')
+# print(y_true.shape)
+y_true_cls = tf.argmax(y_true, dimension=1)
 
-    # Convolution Layer 2
-    layer_conv2, weights_conv2, biases_conv2 = new_conv_layer(layer_in=layer_conv1,
-                                                              num_input_channels=num_filters1,
-                                                              filter_size=filter_size2,
-                                                              num_filters=num_filters2,
-                                                              pooling='avg',
-                                                              stddev=0.01)
+# Convolution Layer 1
+layer_conv1, weights_conv1, biases_conv1 = new_conv_layer(layer_in=x_image,
+                                                          num_input_channels=num_channels,
+                                                          filter_size=filter_size1,
+                                                          num_filters=num_filters1,
+                                                          pooling='max',
+                                                          stddev=0.0001, )
 
-    # Convolution Layer 3
-    layer_conv3, weights_conv3, biases_conv3 = new_conv_layer(layer_in=layer_conv2,
-                                                              num_input_channels=num_filters2,
-                                                              filter_size=filter_size2,
-                                                              num_filters=num_filters3,
-                                                              pooling='avg',
-                                                              stddev=0.0001)
+# Convolution Layer 2
+layer_conv2, weights_conv2, biases_conv2 = new_conv_layer(layer_in=layer_conv1,
+                                                          num_input_channels=num_filters1,
+                                                          filter_size=filter_size2,
+                                                          num_filters=num_filters2,
+                                                          pooling='avg',
+                                                          stddev=0.01)
 
-    layer_flat, num_features = flatten_layer(layer_conv3)
-    print(layer_flat)
+# Convolution Layer 3
+layer_conv3, weights_conv3, biases_conv3 = new_conv_layer(layer_in=layer_conv2,
+                                                          num_input_channels=num_filters2,
+                                                          filter_size=filter_size2,
+                                                          num_filters=num_filters3,
+                                                          pooling='avg',
+                                                          stddev=0.0001)
 
-    layer_fc1, weights_fc1, biases_fc1 = new_fc_layer(layer_in=layer_flat,
-                                                      num_inputs=num_features,
-                                                      num_outputs=fc_size1,
-                                                      use_relu=False)
+layer_flat, num_features = flatten_layer(layer_conv3)
 
-    layer_fc2, weights_fc2, biases_fc2 = new_fc_layer(layer_in=layer_fc1,
-                                                      num_inputs=fc_size1,
-                                                      num_outputs=fc_size2,
-                                                      use_relu=False)
-    y_pred = tf.nn.softmax(layer_fc2)
+layer_fc1, weights_fc1, biases_fc1 = new_fc_layer(layer_in=layer_flat,
+                                                  num_inputs=num_features,
+                                                  num_outputs=fc_size1,
+                                                  use_relu=False)
 
-    y_pred_cls = tf.argmax(y_pred, dimension=1)
+layer_fc2, weights_fc2, biases_fc2 = new_fc_layer(layer_in=layer_fc1,
+                                                  num_inputs=fc_size1,
+                                                  num_outputs=fc_size2,
+                                                  use_relu=False)
+y_pred = tf.nn.softmax(layer_fc2)
+
+y_pred_cls = tf.argmax(y_pred, dimension=1)
+
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=layer_fc2,
+                                                        labels=y_true)
+cost = tf.reduce_mean(cross_entropy)
+
+optimizer = tf.train.AdamOptimizer(learning_rate=1e-4).minimize(cost)
+
+correct_prediction = tf.equal(y_pred_cls, y_true_cls)
+
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
-    pass
+
+session = tf.Session()
+session.run(tf.global_variables_initializer())
+train_batch_size = 64
+
+total_iterations = 0
 
 
-create()
+def optimize(num_iterations):
+    # Ensure we update the global variable rather than a local copy.
+    global total_iterations
+
+    # Start-time used for printing time-usage below.
+    start_time = time.time()
+
+    for i in range(total_iterations,
+                   total_iterations + num_iterations):
+
+        # Get a batch of training examples.
+        # x_batch now holds a batch of images and
+        # y_true_batch are the true labels for those images.
+        x_batch, y_true_batch = dataset.next_batch(type='train', batch_size=train_batch_size)
+
+        # Put the batch into a dict with the proper names
+        # for placeholder variables in the TensorFlow graph.
+        feed_dict_train = {x_image: x_batch,
+                           y_true: y_true_batch}
+
+        # Run the optimizer using this batch of training data.
+        # TensorFlow assigns the variables in feed_dict_train
+        # to the placeholder variables and then runs the optimizer.
+        session.run(optimizer, feed_dict=feed_dict_train)
+
+        # Print status every 100 iterations.
+        if i % 100 == 0:
+            # Calculate the accuracy on the training-set.
+            acc = session.run(accuracy, feed_dict=feed_dict_train)
+
+            # Message for printing.
+            msg = "Optimization Iteration: {0:>6}, Training Accuracy: {1:>6.1%}"
+
+            # Print it.
+            print(msg.format(i + 1, acc))
+
+    # Update the total number of iterations performed.
+    total_iterations += num_iterations
+
+    # Ending time.
+    end_time = time.time()
+
+    # Difference between start and end-times.
+    time_dif = end_time - start_time
+
+    # Print the time-usage.
+    print("Time usage: " + str(timedelta(seconds=int(round(time_dif)))))
 
 
+optimize(100000)
