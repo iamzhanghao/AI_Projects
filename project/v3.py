@@ -1,5 +1,5 @@
 
-from Brc_Project.utils import *
+from project.utils import *
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import time

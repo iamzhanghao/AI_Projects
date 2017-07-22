@@ -1,4 +1,4 @@
-from Brc_Project.utils import *
+from project.utils import *
 import tensorflow as tf
 
 data = get_data(split="2", size="100X", platform="Windows")

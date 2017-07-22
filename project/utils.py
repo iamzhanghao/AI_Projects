@@ -9,7 +9,7 @@ def get_data(split="1", size="40X", platform="Windows"):
     print("Fetching data:\nsplit = " + split + "\nsize = " + size + "\nplatform = " + platform)
     if platform == "Mac":
         data_dir = "/Users/zhanghao/Projects/Project_Dir/"
-        project_Dir = "/Users/zhanghao/Projects/AI_Projects/Brc_Project/breakhissplits_v2/train_val_test_60_12_28/shuffled/split"
+        project_Dir = "/Users/zhanghao/Projects/AI_Projects/project/breakhissplits_v2/train_val_test_60_12_28/shuffled/split"
     else:
         data_dir = "D:\\"
         project_Dir = "C:\\Users\Hao\Projects\AI_Projects\Brc_Project\\breakhissplits_v2\\train_val_test_60_12_28\shuffled\split"
@@ -144,11 +144,11 @@ class Dataset:
 
 
 # #
-data = get_data(split="2", size="100X", platform="Windows")
+# data = get_data(split="2", size="100X", platform="Windows")
 #
 # dataset = Dataset(data)
-# dataset.save("C:\\Users\Hao\Projects\AI_Projects\Brc_Project\saved_dataset\dataset1.npy")
+# dataset.save("C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset1.npy")
 
-# dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\Brc_Project\saved_dataset\dataset1.npy")
+# dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset1.npy")
 
 
