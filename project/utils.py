@@ -109,7 +109,6 @@ class Dataset:
         else:
             self.dataset = np.load(path)
             self.dataset = self.dataset[()]
-            print(type(self.dataset))
             print("Train Data: ", self.dataset['train_data'].shape)
             print("Train Label: ", self.dataset['train_label'].shape)
             print("Val Data: ", self.dataset['val_data'].shape)
@@ -141,6 +140,14 @@ class Dataset:
             self.current[type] = (self.current[type] + 1) % self.size[type]
 
         return batch_x, batch_y
+
+    def get_val(self):
+        x = []
+        y = []
+        for _ in range(self.size['val']):
+            x.append(self.dataset['val_data'][_])
+            y.append(self.dataset['val_label'][_])
+        return x,y
 
 
 # #

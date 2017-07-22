@@ -28,10 +28,26 @@ class HaoNet:
                 }
 
             }
-            self.fresh_start = True
         else:
-            self.prams = weights
-            self.fresh_start = False
+            weights = np.load(weights)
+            weights = weights[()]
+            self.prams = {
+                'weights': {
+                    'conv1': tf.Variable(weights['weights']['conv1']),
+                    'conv2': tf.Variable(weights['weights']['conv2']),
+                    'conv3': tf.Variable(weights['weights']['conv3']),
+                    'fc1': tf.Variable(weights['weights']['fc1']),
+                    'fc2': tf.Variable(weights['weights']['fc2'])
+                },
+                'biases': {
+                    'conv1': tf.Variable(weights['biases']['conv1']),
+                    'conv2': tf.Variable(weights['biases']['conv2']),
+                    'conv3': tf.Variable(weights['biases']['conv3']),
+                    'fc1': tf.Variable(weights['biases']['fc1']),
+                    'fc2': tf.Variable(weights['biases']['fc2'])
+                }
+
+            }
 
         self.create()
 
@@ -276,7 +292,7 @@ class HaoNet:
 
         self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
 
-    def optimize(self, session, num_iterations, batchsize):
+    def train(self, session, num_iterations, batchsize):
         # Ensure we update the global variable rather than a local copy.
         total_iterations = 0
 
@@ -324,5 +340,21 @@ class HaoNet:
         # Print the time-usage.
         print("Time usage: " + str(timedelta(seconds=int(round(time_dif)))))
 
-    def save_params(self, path):
-        np.save(path, self.prams)
+    def validate(self, session):
+        x, y = self.dataset.get_val()
+
+        feed_dict_train = {self.x_image: x,
+                           self.y_true: y}
+
+        acc = session.run(self.accuracy, feed_dict=feed_dict_train)
+
+        print("Training Accuracy: ", acc)
+
+    def test(self):
+        pass
+
+    def classify(self):
+        pass
+
+    def save_params(self, session, path):
+        np.save(path, session.run(self.prams))
