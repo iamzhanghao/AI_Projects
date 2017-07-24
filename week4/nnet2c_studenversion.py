@@ -18,7 +18,7 @@ FLAGS = None
 def placeholder_inputs(batch_size):
     """Generate placeholder variables to represent the input tensors.
   These placeholders are used as inputs by the rest of the model building
-  code and will be fed from the downloaded data in the .run() loop, below.
+  planner_v2 and will be fed from the downloaded data in the .run() loop, below.
   Args:
     batch_size: The batch size will be baked into both placeholders.
   Returns:

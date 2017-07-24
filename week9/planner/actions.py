@@ -138,7 +138,7 @@ if __name__ == "__main__":
               ['holding', '?paintingtool'], ['paintingtool', '?paintingtool'], ['has-paint-color', '?paintingtool', \
               '?newcol']], ':effect', ['and', ['colored', '?obj', '?newcol'], ['not', ['colored', '?obj', '?origcol']]]] 
     result = parse_action(action)
-    #result.dump()
+    result.dump()
 
     #ground_map = result.createGroundMap(object_map)
 
@@ -146,14 +146,14 @@ if __name__ == "__main__":
                        ('?paint', 'paint'), ('?obj', 'C'), ('?origcol', 'red'),\
                        ('?newcol', 'blue'), ('?paintingtool', 'spray')])
 
-    print "Grounded Preconditions:"
-    for e in result.ground_precondition(ground_map):
-        print '\t' + str(e) + '\n'
-
-    print "Grounded Add Effects:"
-    for e in result.ground_add_effects(ground_map):
-        print '\t' + str(e) + '\n'
-
-    print "Grounded Delete Effects:"
-    for e in result.ground_del_effects(ground_map):
-        print '\t' + str(e) + '\n'
+    # print "Grounded Preconditions:"
+    # for e in result.ground_precondition(ground_map):
+    #     print '\t' + str(e) + '\n'
+    #
+    # print "Grounded Add Effects:"
+    # for e in result.ground_add_effects(ground_map):
+    #     print '\t' + str(e) + '\n'
+    #
+    # print "Grounded Delete Effects:"
+    # for e in result.ground_del_effects(ground_map):
+    #     print '\t' + str(e) + '\n'

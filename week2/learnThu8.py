@@ -217,7 +217,7 @@ def getCurveData(addOnes=False, random=False):
 # Get the Blog data
 
 def getBlogData(n):
-    dir = '/home/binder/entwurf6/teaching/2017/ai_2017/wek1/code/'
+    dir = '/home/binder/entwurf6/teaching/2017/ai_2017/wek1/planner_v2/'
     X = np.matrix(np.genfromtxt(dir + 'x_train.csv',
                                 delimiter=','))
     if n == None:

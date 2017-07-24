@@ -6,7 +6,7 @@ import os
 import copy
 
 """
-This code is highly influenced by the implementation of:
+This planner_v2 is highly influenced by the implementation of:
 https://github.com/joelthchao/tensorflow-finetune-flickr-style/dataset.py
 But changed abit to allow dataaugmentation (yet only horizontal flip) and 
 shuffling of the data. 

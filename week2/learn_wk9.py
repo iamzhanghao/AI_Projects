@@ -81,7 +81,7 @@ def sgdLogReg(X, y, l=0, step_size=0.01, w0=None, max_iter=1000,
 
     # Look at gdLogReg in learnThu8.py
     # define f and df
-    # Your code here
+    # Your planner_v2 here
 
     def df(w, Xj, yj):
         return np.sum(np.multiply(s(Xj*w) - yj, Xj), axis = 0).T + l * w

@@ -11,11 +11,11 @@ from functools import reduce
 #______________________________________________________________________________
 # Compatibility with Python 2.2, 2.3, and 2.4
 
-# The AIMA code was originally designed to run in Python 2.2 and up.
+# The AIMA planner_v2 was originally designed to run in Python 2.2 and up.
 # The first part of this file implements for Python 2.2 through 2.4
-# the parts of 2.5 that the original code relied on. Now we're
+# the parts of 2.5 that the original planner_v2 relied on. Now we're
 # starting to go beyond what can be filled in this way, but here's
-# the compatibility code still since it doesn't hurt:
+# the compatibility planner_v2 still since it doesn't hurt:
 #
 # try: bool, True, False ## Introduced in 2.3
 # except NameError:

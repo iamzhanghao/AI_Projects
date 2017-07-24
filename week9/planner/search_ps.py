@@ -1,7 +1,12 @@
 # Written by Patricia Suriana, MIT ca. 2013
 
-from dataStructure import *
-from heuristic import *
+# from dataStructure import *
+# from heuristic import *
+
+from utils import PriorityQueue
+
+
+
 
 
 ##################################################################################################
