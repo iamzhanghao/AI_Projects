@@ -6,8 +6,8 @@ from PIL import Image
 sys.path.insert(0, '.')
 sys.path.insert(0, '../imagenetdata')
 
-from week6.mon.getimagenetclasses import *
-from week6.mon.alexnet import *
+from week6.getimagenetclasses import *
+from week6.alexnet import *
 
 
 def preproc_py2(imname, shorterside):
@@ -26,8 +26,7 @@ def preproc_py2(imname, shorterside):
         neww = shorterside
     resimg = pilimg.resize((neww, newh))
 
-    # im = np.array(resimg, dtype=np.float32)
-    im = np.array(resimg)
+    im = np.array(resimg, dtype=np.float32)
 
     return im
 
@@ -103,22 +102,15 @@ def getout():
     return out, x, net
 
 
-def save_img(image, show=False):
-    if image.ndim == 4:
-        img = Image.fromarray(image[0].astype(np.uint8), "RGB")
-    else:
-        img = Image.fromarray(image.astype(np.uint8), "RGB")
-    img.save('C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\modified_img0.png')
-    if show:
-        img.show()
-
-
 def run2():
-    stepsize = 20.0
-    desired_label = 949
-    imname = 'C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\mrshout2.jpg'
+    cstepsize = 20.0
+    target_label = 949
+    imname = 'C:\\Users\Hao\PycharmProjects\AI_Projects\week6\mon\imgs\img0.png'
+    imname = 'C:\\Users\Hao\Desktop\\1.png'
+
 
     imagenet_mean = np.array([104., 117., 123.], dtype=np.float32)
+
     cls = get_classes()
 
     sess = tf.Session()
@@ -128,73 +120,42 @@ def run2():
     sess.run(init)
     net.load_initial_weights(sess)
 
-    image = preproc_py2(imname, 250)
-
-    print(image.shape)
+    im = preproc_py2(imname, 250)
+    print(im.shape)
     print(imname)
 
     # convert grey to color
-    if (image.ndim < 3):
-        image = np.expand_dims(image, 2)
-        image = np.concatenate((image, image, image), 2)
+    if (im.ndim < 3):
+        im = np.expand_dims(im, 2)
+        im = np.concatenate((im, im, im), 2)
 
     # dump alpha channel if it exists
-    if (image.shape[2] > 3):
-        image = image[:, :, 0:3]
+    if (im.shape[2] > 3):
+        im = im[:, :, 0:3]
 
     # here need to average over 5 crops instead of one
-    image_crop = cropped_center(image, 227, 227)
+    image_croped = cropped_center(im, 227, 227)
 
-    image_crop = image_crop[:, :, [2, 1, 0]]  # RGB to BGR
-    image_crop = image_crop - imagenet_mean
-    image_crop = np.expand_dims(image_crop, 0)
-    save_img(image_crop)
+    image_croped = image_croped[:, :, [2, 1, 0]]  # RGB to BGR
+    image_croped = image_croped - imagenet_mean
+    image_croped = np.expand_dims(image_croped, 0)
+    print("Shape: ",type(image_croped),image_croped.shape)
+
 
     # run initial classification
-    predict_values = sess.run(out, feed_dict={x: image_crop})
-
+    predict_values = sess.run(out, feed_dict={x: image_croped})
 
     original_label = np.argmax(predict_values)
 
     print('at start: classindex: ' + str(original_label) + '\nclasslabel: ' + cls[
         np.argmax(predict_values)] + '\nscore:' + str(np.max(predict_values)))
 
-    print(predict_values[0, desired_label], predict_values[0, original_label])
+    print(predict_values[0,target_label],predict_values[0,original_label])
 
-
-    ## attempt 1
-    # sess.close()
-
-    # current_label = original_label
-    # tf_img = tf.Variable(image_crop,name = 'tf_img')
-    # score = tf.Variable(predict_values[0,desired_label],name="predict_values")
-    #
-    #
-    # optimizer = tf.train.GradientDescentOptimizer(20)
-    # train = optimizer.minimize(-score)
-    #
-    # init = tf.initialize_all_variables()
-    #
-    # with tf.Session() as session:
-    #     session.run(init)
-    #     step = 0
-    #     while(current_label != desired_label):
-    #         step += 1
-    #         session.run(train)
-    #         print("step"+ str(step), "score "+ str(session.run(score)),end="")
-    #         predict_values = sess.run(out, feed_dict={x: session.run(tf_img)})
-    #         print(" prediction:" + str(np.argmax(predict_values)))
-
-    ## attempt 2
-
-    current_label = original_label
-    gradient = tf.gradients(tf.slice(out,[0,1],[0,desired_label]),x)
-
-    while current_label != desired_label:
-        gradient_val = sess.run(gradient, feed_dict={x: image_crop})
-        image_crop += np.tensordot(stepsize,gradient_val)
-        print(gradient_val)
-        break
+    print(image_croped[0].shape)
+    img = Image.fromarray(image_croped[0],"RGB")
+    img.save('C:\\Users\H\PycharmProjects\AI_Projects\week6\mon\imgs\modified_img0.png')
+    img.show()
 
 
 if __name__ == '__main__':

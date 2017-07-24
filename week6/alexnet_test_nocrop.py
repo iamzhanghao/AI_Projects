@@ -6,8 +6,8 @@ from PIL import Image
 sys.path.insert(0, '.')
 sys.path.insert(0, '../imagenetdata')
 
-from week6.mon.getimagenetclasses import *
-from week6.mon.alexnet import *
+from week6.getimagenetclasses import *
+from week6.alexnet import *
 
 
 def preproc_py2(imname, shorterside):

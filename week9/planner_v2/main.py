@@ -1,16 +1,5 @@
-#!/usr/bin/env python2
 # Written by Patricia Suriana, MIT ca. 2013
 # Modified by Tomas Lozano-Perez, MIT ca 2016
-
-
-'''
-comparison between h_G and h_FF:
-          h_G                                  h_FF
-sussman     32 states expanded, path cost= 6    20 states expanded, path cost= 6
-large-a   1469 states expanded, path cost=12   109 states expanded, path cost=12
-large-b   cannot solve in 5 mins               356 states expanded, path cost=18
-
-'''
 
 import pddl_parser
 import search
@@ -34,7 +23,6 @@ class PlanProblem(search.Problem):
         return self.task.goal_reached(state)
 
     def forward(self, state):
-        '''forward pass'''
         self.fl = {}
         self.al = {}
         self.ml = None
@@ -62,27 +50,26 @@ class PlanProblem(search.Problem):
             step += 1
 
     def hff(self, n):
-        '''backward pass'''
         self.forward(n.state)
         if self.ml is None:
             return search.inf
 
         selected = set()
 
-        G_t = []
+        g_arr = []
         for i in range(self.ml + 1):
-            G_t.append(set())
+            g_arr.append(set())
         for fact in self.task.goals:
-            G_t[self.fl[fact]].add(fact)
+            g_arr[self.fl[fact]].add(fact)
 
         for step in range(self.ml, 0, -1):
-            for fact in G_t[step]:
+            for fact in g_arr[step]:
                 for action in self.al:
                     if self.al[action] == step - 1:
                         if fact in action.add_effects:
                             selected.add(action)
                             for p in action.preconditions:
-                                G_t[self.fl[p]].add(p)
+                                g_arr[self.fl[p]].add(p)
 
         return len(selected)
 
@@ -126,8 +113,8 @@ def printOutput(tic, toc, path, cost):
 if __name__ == "__main__":
     args = sys.argv
     if len(args) != 3:  # default task
-        dirName = "painting"
-        fileName = "p0"
+        dirName = "logistics-strips"
+        fileName = "prob001-log-easy"
     else:
         dirName = args[1]
         fileName = args[2]
@@ -152,10 +139,10 @@ if __name__ == "__main__":
     # Your planner_v2 here
     p = search.InstrumentedProblem(PlanProblem(task))
     # soln = search.astar_search(p, lambda n: 0)
-    # soln = search.astar_search(p, lambda n: p.h_g(n))
+    soln = search.astar_search(p, lambda n: p.h_g(n))
     # soln = search.astar_search(p, lambda n: p.hmax(n))
     # soln = search.astar_search(p, lambda n: p.hsum(n))
-    soln = search.astar_search(p, lambda n: p.hff(n))
+    # soln = search.astar_search(p, lambda n: p.hff(n))
     print('search stats', p)
     if soln is None:
         print ('no solution found')

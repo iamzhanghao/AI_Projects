@@ -151,7 +151,7 @@ class Dataset:
 
 
 # #
-# data = get_data(split="2", size="100X", platform="Windows")
+data = get_data(split="2", size="100X", platform="Mac")
 #
 # dataset = Dataset(data)
 # dataset.save("C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset1.npy")
