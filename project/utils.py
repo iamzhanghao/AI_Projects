@@ -12,7 +12,7 @@ def get_data(split="1", size="40X", platform="Windows"):
         project_Dir = "/Users/zhanghao/Projects/AI_Projects/project/breakhissplits_v2/train_val_test_60_12_28/shuffled/split"
     else:
         data_dir = "D:\\"
-        project_Dir = "C:\\Users\Hao\Projects\AI_Projects\Brc_Project\\breakhissplits_v2\\train_val_test_60_12_28\shuffled\split"
+        project_Dir = "C:\\Users\Hao\Projects\AI_Projects\project\\breakhissplits_v2\\train_val_test_60_12_28\shuffled\split"
 
     data_set = {"train": [],
                 "val": [],
@@ -109,12 +109,12 @@ class Dataset:
         else:
             self.dataset = np.load(path)
             self.dataset = self.dataset[()]
-            print("Train Data: ", self.dataset['train_data'].shape)
-            print("Train Label: ", self.dataset['train_label'].shape)
-            print("Val Data: ", self.dataset['val_data'].shape)
-            print("Val Label: ", self.dataset['val_label'].shape)
-            print("Test Data: ", self.dataset['test_data'].shape)
-            print("Test Label: ", self.dataset['test_label'].shape)
+            # print("Train Data: ", self.dataset['train_data'].shape)
+            # print("Train Label: ", self.dataset['train_label'].shape)
+            # print("Val Data: ", self.dataset['val_data'].shape)
+            # print("Val Label: ", self.dataset['val_label'].shape)
+            # print("Test Data: ", self.dataset['test_data'].shape)
+            # print("Test Label: ", self.dataset['test_label'].shape)
 
         self.current = {
             'train': 0,
@@ -151,7 +151,7 @@ class Dataset:
 
 
 # #
-data = get_data(split="2", size="100X", platform="Mac")
+data = get_data(split="2", size="100X", platform="Windows")
 #
 # dataset = Dataset(data)
 # dataset.save("C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset1.npy")

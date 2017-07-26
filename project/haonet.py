@@ -7,11 +7,12 @@ from datetime import timedelta
 
 
 class HaoNet:
-    def __init__(self, dataset, weights=None):
+
+    def __init__(self, dataset, params=None):
         self.init_variables()
         self.dataset = dataset
-        if weights is None:
-            self.prams = {
+        if params is None:
+            self.params = {
                 'weights': {
                     'conv1': None,
                     'conv2': None,
@@ -29,22 +30,22 @@ class HaoNet:
 
             }
         else:
-            weights = np.load(weights)
-            weights = weights[()]
-            self.prams = {
+            params = np.load(params)
+            params = params[()]
+            self.params = {
                 'weights': {
-                    'conv1': tf.Variable(weights['weights']['conv1']),
-                    'conv2': tf.Variable(weights['weights']['conv2']),
-                    'conv3': tf.Variable(weights['weights']['conv3']),
-                    'fc1': tf.Variable(weights['weights']['fc1']),
-                    'fc2': tf.Variable(weights['weights']['fc2'])
+                    'conv1': tf.Variable(params['weights']['conv1']),
+                    'conv2': tf.Variable(params['weights']['conv2']),
+                    'conv3': tf.Variable(params['weights']['conv3']),
+                    'fc1': tf.Variable(params['weights']['fc1']),
+                    'fc2': tf.Variable(params['weights']['fc2'])
                 },
                 'biases': {
-                    'conv1': tf.Variable(weights['biases']['conv1']),
-                    'conv2': tf.Variable(weights['biases']['conv2']),
-                    'conv3': tf.Variable(weights['biases']['conv3']),
-                    'fc1': tf.Variable(weights['biases']['fc1']),
-                    'fc2': tf.Variable(weights['biases']['fc2'])
+                    'conv1': tf.Variable(params['biases']['conv1']),
+                    'conv2': tf.Variable(params['biases']['conv2']),
+                    'conv3': tf.Variable(params['biases']['conv3']),
+                    'fc1': tf.Variable(params['biases']['fc1']),
+                    'fc2': tf.Variable(params['biases']['fc2'])
                 }
 
             }
@@ -225,59 +226,59 @@ class HaoNet:
 
         # Convolution Layer 1
         self.layer_conv1, \
-        self.prams['weights']['conv1'], \
-        self.prams['biases']['conv1'] = self.new_conv_layer(layer_in=self.x_image,
-                                                            num_input_channels=self.num_channels,
-                                                            filter_size=self.filter_size1,
-                                                            num_filters=self.num_filters1,
-                                                            pooling='max',
-                                                            stddev=0.0001,
-                                                            weights=self.prams['weights']['conv1'],
-                                                            biases=self.prams['biases']['conv1'])
+        self.params['weights']['conv1'], \
+        self.params['biases']['conv1'] = self.new_conv_layer(layer_in=self.x_image,
+                                                             num_input_channels=self.num_channels,
+                                                             filter_size=self.filter_size1,
+                                                             num_filters=self.num_filters1,
+                                                             pooling='max',
+                                                             stddev=0.0001,
+                                                             weights=self.params['weights']['conv1'],
+                                                             biases=self.params['biases']['conv1'])
 
         # Convolution Layer 2
         self.layer_conv2, \
-        self.prams['weights']['conv2'], \
-        self.prams['biases']['conv2'] = self.new_conv_layer(layer_in=self.layer_conv1,
-                                                            num_input_channels=self.num_filters1,
-                                                            filter_size=self.filter_size2,
-                                                            num_filters=self.num_filters2,
-                                                            pooling='avg',
-                                                            stddev=0.01,
-                                                            weights=self.prams['weights']['conv2'],
-                                                            biases=self.prams['biases']['conv2'])
+        self.params['weights']['conv2'], \
+        self.params['biases']['conv2'] = self.new_conv_layer(layer_in=self.layer_conv1,
+                                                             num_input_channels=self.num_filters1,
+                                                             filter_size=self.filter_size2,
+                                                             num_filters=self.num_filters2,
+                                                             pooling='avg',
+                                                             stddev=0.01,
+                                                             weights=self.params['weights']['conv2'],
+                                                             biases=self.params['biases']['conv2'])
 
         # Convolution Layer 3
         self.layer_conv3, \
-        self.prams['weights']['conv3'], \
-        self.prams['biases']['conv3'] = self.new_conv_layer(layer_in=self.layer_conv2,
-                                                            num_input_channels=self.num_filters2,
-                                                            filter_size=self.filter_size2,
-                                                            num_filters=self.num_filters3,
-                                                            pooling='avg',
-                                                            stddev=0.0001,
-                                                            weights=self.prams['weights']['conv3'],
-                                                            biases=self.prams['biases']['conv3'])
+        self.params['weights']['conv3'], \
+        self.params['biases']['conv3'] = self.new_conv_layer(layer_in=self.layer_conv2,
+                                                             num_input_channels=self.num_filters2,
+                                                             filter_size=self.filter_size2,
+                                                             num_filters=self.num_filters3,
+                                                             pooling='avg',
+                                                             stddev=0.0001,
+                                                             weights=self.params['weights']['conv3'],
+                                                             biases=self.params['biases']['conv3'])
 
         self.layer_flat, self.num_features = self.flatten_layer(self.layer_conv3)
 
         self.layer_fc1, \
-        self.prams['weights']['fc1'], \
-        self.prams['biases']['fc1'] = self.new_fc_layer(layer_in=self.layer_flat,
-                                                        num_inputs=self.num_features,
-                                                        num_outputs=self.fc_size1,
-                                                        use_relu=False,
-                                                        weights=self.prams['weights']['fc1'],
-                                                        biases=self.prams['biases']['fc1'])
+        self.params['weights']['fc1'], \
+        self.params['biases']['fc1'] = self.new_fc_layer(layer_in=self.layer_flat,
+                                                         num_inputs=self.num_features,
+                                                         num_outputs=self.fc_size1,
+                                                         use_relu=False,
+                                                         weights=self.params['weights']['fc1'],
+                                                         biases=self.params['biases']['fc1'])
 
         self.layer_fc2, \
-        self.prams['weights']['fc2'], \
-        self.prams['biases']['fc2'] = self.new_fc_layer(layer_in=self.layer_fc1,
-                                                        num_inputs=self.fc_size1,
-                                                        num_outputs=self.fc_size2,
-                                                        use_relu=False,
-                                                        weights=self.prams['weights']['fc2'],
-                                                        biases=self.prams['biases']['fc2'])
+        self.params['weights']['fc2'], \
+        self.params['biases']['fc2'] = self.new_fc_layer(layer_in=self.layer_fc1,
+                                                         num_inputs=self.fc_size1,
+                                                         num_outputs=self.fc_size2,
+                                                         use_relu=False,
+                                                         weights=self.params['weights']['fc2'],
+                                                         biases=self.params['biases']['fc2'])
         self.y_pred = tf.nn.softmax(self.layer_fc2)
 
         self.y_pred_cls = tf.argmax(self.y_pred, dimension=1)
@@ -357,4 +358,4 @@ class HaoNet:
         pass
 
     def save_params(self, session, path):
-        np.save(path, session.run(self.prams))
+        np.save(path, session.run(self.params))
