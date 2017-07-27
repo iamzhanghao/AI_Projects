@@ -29,7 +29,7 @@ def random_crop(path, patch_size):
     im.thumbnail(size)
     im.show()
 
-random_crop("C:\\Users\JunHao\OneDrive\#Term8\AIproject\project\\breakhis\\40X\SOB_B_A-14-22549AB-40-001.png",64)
+random_crop("C:\\Users\JunHao\OneDrive\#Term8\\breakhis\\40X\SOB_B_A-14-22549AB-40-001.png",64)
 # dataset = Dataset(path="C:\\Users\JunHao\OneDrive\#Term8\AIproject\project\saved_dataset\dataset1.npy")
 # img,l=dataset.next_batch(type='train', batch_size=64)
 # 2. mirror / rotate
