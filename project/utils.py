@@ -2,6 +2,7 @@ import pprint
 import numpy as np
 from PIL import Image
 from PIL import ImageOps
+import random
 
 pp = pprint.PrettyPrinter(indent=5)
 
@@ -12,7 +13,7 @@ def get_data(split="1", size="40X", platform="Windows", user="JunHao"):
         data_dir = "/Users/zhanghao/Projects/Project_Dir/"
         project_Dir = "/Users/zhanghao/Projects/AI_Projects/project/breakhissplits_v2/train_val_test_60_12_28/shuffled/split"
     else:
-        if user=="JunHao":
+        if user == "JunHao":
             data_dir = "C:\\Users\JunHao\OneDrive\#Term8\\breakhis"
             project_Dir = "C:\\Users\JunHao\OneDrive\#Term8\AIproject\project\\breakhissplits_v2\\train_val_test_60_12_28\shuffled\split"
 
@@ -68,8 +69,11 @@ def read_img(path, crop=64):
     return img_arr
 
 
+
+
+
 class Dataset:
-    def __init__(self, data=None, crop=64, path=None):
+    def __init__(self, data=None, crop=64, path=None, num_of_imgs= 10):
 
         if path is None:
             self.dataset = {
@@ -84,9 +88,22 @@ class Dataset:
             data_arr = []
             label_arr = []
             print("Generating dataset...")
+            count = 0
             for entry in data['train']:
-                data_arr.append(read_img(entry[0], crop=crop))
-                label_arr.append(entry[1])
+                count += 1
+                if count % 100 == 0:
+                    print("Progress = ", round(count / len(data['train']) * 100, 2), "%")
+
+                imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True)
+                for img in imgs:
+                    data_arr.append(img)
+                    label_arr.append(entry[1])
+
+            print("Shuffling")
+            c = list(zip(data_arr, label_arr))
+            random.shuffle(c)
+            data_arr, label_arr = zip(*c)
+
             self.dataset['train_data'] = np.array(data_arr)
             self.dataset['train_label'] = np.array(label_arr)
             print("Train Data: ", self.dataset['train_data'].shape)
@@ -95,18 +112,31 @@ class Dataset:
             data_arr = []
             label_arr = []
             for entry in data['val']:
-                data_arr.append(read_img(entry[0], crop=crop))
-                label_arr.append(entry[1])
+                imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True)
+                data_arr.append([])
+                label_arr.append([])
+
+                for img in imgs:
+                    data_arr[-1].append(img)
+                    label_arr[-1].append(entry[1])
+
+
             self.dataset['val_data'] = np.array(data_arr)
             self.dataset['val_label'] = np.array(label_arr)
             print("Val Data: ", self.dataset['val_data'].shape)
             print("Val Label: ", self.dataset['val_label'].shape)
 
+
             data_arr = []
             label_arr = []
             for entry in data['test']:
-                data_arr.append(read_img(entry[0], crop=crop))
-                label_arr.append(entry[1])
+                imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True)
+                data_arr.append([])
+                label_arr.append([])
+                for img in imgs:
+                    data_arr[-1].append(img)
+                    label_arr[-1].append(entry[1])
+
             self.dataset['test_data'] = np.array(data_arr)
             self.dataset['test_label'] = np.array(label_arr)
             print("Test Data: ", self.dataset['test_data'].shape)
@@ -115,12 +145,7 @@ class Dataset:
         else:
             self.dataset = np.load(path)
             self.dataset = self.dataset[()]
-            # print("Train Data: ", self.dataset['train_data'].shape)
-            # print("Train Label: ", self.dataset['train_label'].shape)
-            # print("Val Data: ", self.dataset['val_data'].shape)
-            # print("Val Label: ", self.dataset['val_label'].shape)
-            # print("Test Data: ", self.dataset['test_data'].shape)
-            # print("Test Label: ", self.dataset['test_label'].shape)
+
 
         self.current = {
             'train': 0,
@@ -147,13 +172,13 @@ class Dataset:
 
         return batch_x, batch_y
 
-    def get_val(self):
-        x = []
-        y = []
-        for _ in range(self.size['val']):
-            x.append(self.dataset['val_data'][_])
-            y.append(self.dataset['val_label'][_])
-        return x, y
+    # def get_val(self):
+    #     x = []
+    #     y = []
+    #     for _ in range(self.size['val']):
+    #         x.append(self.dataset['val_data'][_])
+    #         y.append(self.dataset['val_label'][_])
+    #     return x, y
 
 
 def rotate(img, p0=0.4, p1=0.2, p2=0.2, p3=0.2):
@@ -182,10 +207,13 @@ def mirror(img, p=0.5):
 
 def random_crop(path, patch_size, num_of_imgs, do_rotate=False, do_mirror=False):
     im = Image.open(path)
+    size=im.size[0]/2,im.size[1]/2
+    im.thumbnail(size)
+
     imgs = []
     for _ in range(num_of_imgs):
-        x = randint(0, im.size[0] - patch_size)
-        y = randint(0, im.size[1] - patch_size)
+        x = random.randint(0, im.size[0] - patch_size)
+        y = random.randint(0, im.size[1] - patch_size)
         # print(str(x) + ", " + str(y))
         new_img = im.crop((x, y, x + patch_size, y + patch_size))
         if do_rotate:
@@ -194,22 +222,17 @@ def random_crop(path, patch_size, num_of_imgs, do_rotate=False, do_mirror=False)
             new_img = mirror(new_img)
 
         imgs.append(np.array(new_img))
-        # # mirror
-        # ImageOps.mirror(imnew).show()
-        # # randomly rotate the image
-        # rotate(imnew)
-        # print(np.array(imnew).shape)
-        # # resized
-        # size = 175, 115
-        # im.thumbnail(size)
-        # im.show()
+
     return imgs
 
 
-# #
-data = get_data(split="2", size="100X", platform="Windows", user="JunHao")
-#
-# dataset = Dataset(data)
-# dataset.save("C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset1.npy")
+def prepare():
+    # #
+    data = get_data(split="2", size="100X", platform="Windows", user="Hao")
+    #
+    dataset = Dataset(data)
+    dataset.save("C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset2.npy")
 
-# dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset1.npy")
+
+if __name__ == "__main__":
+    prepare()
