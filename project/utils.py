@@ -1,7 +1,7 @@
 import pprint
 import numpy as np
 from PIL import Image
-
+from PIL import ImageOps
 
 pp = pprint.PrettyPrinter(indent=5)
 
@@ -148,7 +148,57 @@ class Dataset:
         for _ in range(self.size['val']):
             x.append(self.dataset['val_data'][_])
             y.append(self.dataset['val_label'][_])
-        return x,y
+        return x, y
+
+
+def rotate(img, p0=0.4, p1=0.2, p2=0.2, p3=0.2):
+    angle = \
+        np.random.choice(
+            [0, 90, 180, 270],
+            1,
+            p=[p0, p1, p2, p3]
+        )
+
+    return img.rotate(angle[0])
+
+
+def mirror(img, p=0.5):
+    do = np.random.choice(
+        [True, False],
+        1,
+        p=[p, 1 - p]
+    )
+
+    if do[0]:
+        return ImageOps.mirror(img)
+    else:
+        return img
+
+
+def random_crop(path, patch_size, num_of_imgs, do_rotate=False, do_mirror=False):
+    im = Image.open(path)
+    imgs = []
+    for _ in range(num_of_imgs):
+        x = randint(0, im.size[0] - patch_size)
+        y = randint(0, im.size[1] - patch_size)
+        # print(str(x) + ", " + str(y))
+        new_img = im.crop((x, y, x + patch_size, y + patch_size))
+        if do_rotate:
+            new_img = rotate(new_img)
+        if do_mirror:
+            new_img = mirror(new_img)
+
+        imgs.append(np.array(new_img))
+        # # mirror
+        # ImageOps.mirror(imnew).show()
+        # # randomly rotate the image
+        # rotate(imnew)
+        # print(np.array(imnew).shape)
+        # # resized
+        # size = 175, 115
+        # im.thumbnail(size)
+        # im.show()
+    return imgs
 
 
 # #
@@ -158,5 +208,3 @@ data = get_data(split="2", size="100X", platform="Windows")
 # dataset.save("C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset1.npy")
 
 # dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset1.npy")
-
-
