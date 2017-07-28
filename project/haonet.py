@@ -7,7 +7,6 @@ from datetime import timedelta
 
 
 class HaoNet:
-
     def __init__(self, dataset, params=None):
         self.init_variables()
         self.dataset = dataset
@@ -343,27 +342,25 @@ class HaoNet:
 
     def validate(self, session, mode):
         correct = 0
-        total = len(self.dataset.dataset[mode+'_data'])
+        total = len(self.dataset.dataset[mode + '_data'])
 
         for i in range(total):
-            x = self.dataset.dataset[mode+'_data'][i]
-            y = self.dataset.dataset[mode+'_label'][i]
+            x = self.dataset.dataset[mode + '_data'][i]
+            y = self.dataset.dataset[mode + '_label'][i]
 
             feed_dict_train = {self.x_image: x,
                                self.y_true: y}
 
             y_pre_cls = session.run(self.y_pred_cls, feed_dict=feed_dict_train)
 
-            y_true_cls = self.dataset.dataset[mode+'_label'][i][0][1]
-            f=float(sum(y_pre_cls))/len(y_pre_cls)
-            y_pre_cls=0
-            if f >0.5:
-                y_pre_cls=1
-            if y_pre_cls==y_true_cls:
-                correct+=1
-        print(mode+" accuracy = " + str(round(float(correct)/total*100,2))+"%")
-
-
+            y_true_cls = self.dataset.dataset[mode + '_label'][i][0][1]
+            f = float(sum(y_pre_cls)) / len(y_pre_cls)
+            y_pre_cls = 0
+            if f > 0.5:
+                y_pre_cls = 1
+            if y_pre_cls == y_true_cls:
+                correct += 1
+        print(mode + " accuracy = " + str(round(float(correct) / total * 100, 2)) + "%")
 
     def classify(self):
         pass
