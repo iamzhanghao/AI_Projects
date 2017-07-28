@@ -2,7 +2,12 @@ from project.haonet import HaoNet
 from project.utils import *
 import tensorflow as tf
 
-dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset3.npy")
+# dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset3.npy")
+
+
+num_of_imgs= 100
+data = get_data(split="2", size="100X", platform="Windows", user="Hao")
+dataset = Dataset(data, crop=64, num_of_imgs=num_of_imgs)
 
 
 def train(num_iterations, batchsize, load_weights, save_weights):
@@ -35,24 +40,30 @@ def test(load_weights):
     haonet.validate(session, mode='test')
 
 
-def start_new():
-    train(num_iterations=2 * 1000,
+def start_new(filename, times, num_of_images):
+    train(num_iterations=num_of_images,
           batchsize=128,
-          load_weights="None",
-          save_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params1.npy")
+          load_weights=None,
+          save_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
 
-    validate(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params1.npy")
-    test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params1.npy")
+    validate(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
+    test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
+    continuous(filename, times - 1, num_of_images)
 
-def continuous(times):
+
+def continuous(filename, times, num_of_images):
     for _ in range(times):
-        train(num_iterations=4 * 1000,
+        train(num_iterations=4 * 10 * num_of_images,
               batchsize=128,
-              load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params1.npy",
-              save_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params1.npy")
+              load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy",
+              save_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
+        validate(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
+        test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
 
-    validate(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params1.npy")
-    test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params1.npy")
 
+# continuous(filename="params1", times=20,num_of_images=100)
 
-continuous(4)
+start_new(filename="params3",times=20,num_of_images=num_of_imgs)
+
+# validate(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params2.npy")
+# test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params2.npy")

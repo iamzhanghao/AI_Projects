@@ -278,11 +278,17 @@ class HaoNet:
                                                          use_relu=False,
                                                          weights=self.params['weights']['fc2'],
                                                          biases=self.params['biases']['fc2'])
-        self.y_pred = tf.nn.softmax(self.layer_fc2)
+
+        self.dropout = tf.nn.dropout(self.layer_fc2,0.5)
+
+
+
+
+        self.y_pred = tf.nn.softmax(self.dropout)
 
         self.y_pred_cls = tf.argmax(self.y_pred, dimension=1)
 
-        self.cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.layer_fc2,
+        self.cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.dropout,
                                                                      labels=self.y_true)
         self.cost = tf.reduce_mean(self.cross_entropy)
 

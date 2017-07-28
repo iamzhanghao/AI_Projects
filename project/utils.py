@@ -75,6 +75,7 @@ class Dataset:
     def __init__(self, data=None, crop=64, path=None, num_of_imgs=10):
 
         if path is None:
+
             self.dataset = {
                 'train_data': None,
                 'train_label': None,
@@ -84,66 +85,7 @@ class Dataset:
                 'test_label': None
             }
 
-            data_arr = []
-            label_arr = []
-            print("Generating dataset...")
-            print("Preparing train data...")
-            count = 0
-            for entry in data['train']:
-                count += 1
-                if count % 200 == 0:
-                    print("Progress = ", round(count / len(data['train']) * 100, 2), "%")
-
-                imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True)
-                for img in imgs:
-                    data_arr.append(img)
-                    label_arr.append(entry[1])
-
-            print("Shuffling train data...")
-            c = list(zip(data_arr, label_arr))
-            random.shuffle(c)
-            data_arr, label_arr = zip(*c)
-            print("Shuffle done.")
-
-            # data_arr,label_arr = shuffle(data_arr,label_arr)
-
-            self.dataset['train_data'] = np.array(data_arr)
-            self.dataset['train_label'] = np.array(label_arr)
-            print("Train Data: ", self.dataset['train_data'].shape)
-            print("Train Label: ", self.dataset['train_label'].shape)
-
-            data_arr = []
-            label_arr = []
-            for entry in data['val']:
-                imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True)
-                data_arr.append([])
-                label_arr.append([])
-
-                for img in imgs:
-                    data_arr[-1].append(img)
-                    label_arr[-1].append(entry[1])
-
-            print("Preparing val data...")
-            self.dataset['val_data'] = np.array(data_arr)
-            self.dataset['val_label'] = np.array(label_arr)
-            print("Val Data: ", self.dataset['val_data'].shape)
-            print("Val Label: ", self.dataset['val_label'].shape)
-
-            print("Preparing test data...")
-            data_arr = []
-            label_arr = []
-            for entry in data['test']:
-                imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True)
-                data_arr.append([])
-                label_arr.append([])
-                for img in imgs:
-                    data_arr[-1].append(img)
-                    label_arr[-1].append(entry[1])
-
-            self.dataset['test_data'] = np.array(data_arr)
-            self.dataset['test_label'] = np.array(label_arr)
-            print("Test Data: ", self.dataset['test_data'].shape)
-            print("Test Label: ", self.dataset['test_label'].shape)
+            self.init_dataset(data,crop,num_of_imgs)
 
         else:
             self.dataset = np.load(path)
@@ -160,6 +102,72 @@ class Dataset:
             'val': self.dataset['val_data'].shape[0],
             'test': self.dataset['test_data'].shape[0]
         }
+
+    def init_dataset(self,data,crop,num_of_imgs):
+
+
+        data_arr = []
+        label_arr = []
+        print("Generating dataset...")
+        print("Preparing train data...")
+        count = 0
+        for entry in data['train']:
+            count += 1
+            if count % 200 == 0:
+                print("Progress = ", round(count / len(data['train']) * 100, 2), "%")
+
+            imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True)
+            for img in imgs:
+                data_arr.append(img)
+                label_arr.append(entry[1])
+
+        print("Shuffling train data...")
+        c = list(zip(data_arr, label_arr))
+        random.shuffle(c)
+        data_arr, label_arr = zip(*c)
+        print("Shuffle done.")
+
+        # data_arr,label_arr = shuffle(data_arr,label_arr)
+
+        self.dataset['train_data'] = np.array(data_arr)
+        del data_arr
+        self.dataset['train_label'] = np.array(label_arr)
+        del label_arr
+        print("Train Data: ", self.dataset['train_data'].shape)
+        print("Train Label: ", self.dataset['train_label'].shape)
+
+        print("Preparing val data...")
+        data_arr = []
+        label_arr = []
+        for entry in data['val']:
+            imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True)
+            data_arr.append([])
+            label_arr.append([])
+
+            for img in imgs:
+                data_arr[-1].append(img)
+                label_arr[-1].append(entry[1])
+
+        self.dataset['val_data'] = np.array(data_arr)
+        self.dataset['val_label'] = np.array(label_arr)
+        print("Val Data: ", self.dataset['val_data'].shape)
+        print("Val Label: ", self.dataset['val_label'].shape)
+
+        print("Preparing test data...")
+        data_arr = []
+        label_arr = []
+        for entry in data['test']:
+            imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True)
+            data_arr.append([])
+            label_arr.append([])
+            for img in imgs:
+                data_arr[-1].append(img)
+                label_arr[-1].append(entry[1])
+
+        self.dataset['test_data'] = np.array(data_arr)
+        self.dataset['test_label'] = np.array(label_arr)
+        print("Test Data: ", self.dataset['test_data'].shape)
+        print("Test Label: ", self.dataset['test_label'].shape)
 
     def save(self, path):
         print("Saving dataset to "+path)
