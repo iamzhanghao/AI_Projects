@@ -6,14 +6,19 @@ from PIL import ImageOps
 pp = pprint.PrettyPrinter(indent=5)
 
 
-def get_data(split="1", size="40X", platform="Windows"):
+def get_data(split="1", size="40X", platform="Windows", user="JunHao"):
     print("Fetching data:\nsplit = " + split + "\nsize = " + size + "\nplatform = " + platform)
     if platform == "Mac":
         data_dir = "/Users/zhanghao/Projects/Project_Dir/"
         project_Dir = "/Users/zhanghao/Projects/AI_Projects/project/breakhissplits_v2/train_val_test_60_12_28/shuffled/split"
     else:
-        data_dir = "D:\\"
-        project_Dir = "C:\\Users\Hao\Projects\AI_Projects\project\\breakhissplits_v2\\train_val_test_60_12_28\shuffled\split"
+        if user=="JunHao":
+            data_dir = "C:\\Users\JunHao\OneDrive\#Term8\\breakhis"
+            project_Dir = "C:\\Users\JunHao\OneDrive\#Term8\AIproject\project\\breakhissplits_v2\\train_val_test_60_12_28\shuffled\split"
+
+        else:
+            data_dir = "D:\\"
+            project_Dir = "C:\\Users\Hao\Projects\AI_Projects\project\\breakhissplits_v2\\train_val_test_60_12_28\shuffled\split"
 
     data_set = {"train": [],
                 "val": [],
@@ -202,7 +207,7 @@ def random_crop(path, patch_size, num_of_imgs, do_rotate=False, do_mirror=False)
 
 
 # #
-data = get_data(split="2", size="100X", platform="Windows")
+data = get_data(split="2", size="100X", platform="Windows", user="JunHao")
 #
 # dataset = Dataset(data)
 # dataset.save("C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset1.npy")
