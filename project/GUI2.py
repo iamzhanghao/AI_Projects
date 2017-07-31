@@ -14,6 +14,7 @@ class GUI:
         self.imageResultListbox = StringVar()
         self.entryFolderName = StringVar()
         self.entryResultName = StringVar()
+        self.singleImageResult = StringVar()
         self.totalImgNumber = 0
         self.curImgNumber = 0
         self.imageList = []
@@ -44,7 +45,7 @@ class GUI:
         self.frame.grid_columnconfigure(1, minsize = 5)
 
         # Title (maybe not needed?)
-        self.labelTitle = Label(self.frame, text="Cancer Classifier v1.0")
+        self.labelTitle = Label(self.frame, text= "Cancer Classifier v1.0")
         self.labelTitle.grid(row = 0, column = 3, sticky = W)
 
         # dir entry & load
@@ -54,8 +55,8 @@ class GUI:
         self.entryFolder.grid(row = 1, column = 1, columnspan = 4, sticky = W+E)
         self.btnFolder = Button(self.frame, text = "Load", command = self.LoadFromDir)
         self.btnFolder.grid(row = 1, column = 5, sticky = W)
-        self.btnFolder = Button(self.frame, text = "DebugLoad", command = self.LoadDir)
-        self.btnFolder.grid(row = 1, column = 6, sticky = W)
+        #self.btnFolder = Button(self.frame, text = "DebugLoad", command = self.LoadDir)
+        #self.btnFolder.grid(row = 1, column = 6, sticky = W)
 
         self.labelResult = Label(self.frame, text = "Classification Result Dir:")
         self.labelResult.grid(row = 2, column = 0, sticky = E)
@@ -71,7 +72,7 @@ class GUI:
         self.imageListbox = Listbox(self.frame, listvariable = self.imgNameListStringVar, height=5)
         self.imageListbox.grid(row = 4, column = 0, rowspan = 5 , sticky=(N,S,E,W))
         self.imageNameLabel = Label(self.frame, textvariable = self.imageNameListbox)
-        self.imageNameLabel.grid(row = 4, column = 3, columnspan = 3, sticky = W)
+        self.imageNameLabel.grid(row = 3, column = 3, columnspan = 3, sticky = W)
 
         # Result panel 
         self.labelResultList = Label(self.frame, text = "Results:")
@@ -79,9 +80,10 @@ class GUI:
         self.imageResultListStringVar = StringVar(value = self.resultList)
         self.imageResultListbox = Listbox(self.frame, listvariable = self.imageResultListStringVar, height = 5, width = 8)
         self.imageResultListbox.grid(row = 4, column = 1, rowspan = 5 , sticky=(N,S,E,W))
-        self.imageNameLabel = Label(self.frame, textvariable = self.imageNameListbox)
-        self.imageNameLabel.grid(row = 4, column = 3, columnspan = 3, sticky = W)
 
+
+        self.labelImageResult = Label(self.frame, textvariable = self.singleImageResult,  fg = "blue", bg = "yellow", font = "Verdana 10 bold")
+        self.labelImageResult.grid(row = 4, column = 5, sticky = E)
 
         #self.imageListbox.bind('<<ListboxSelect>>', self.DisplaySelectedImageName)
         self.imageListbox.bind('<Double-1>',  self.ListboxSelected)
@@ -107,7 +109,6 @@ class GUI:
         self.goBtn.pack(side = LEFT)
 
 
-
         self.classifyPanel = Frame(self.frame)
         self.classifyPanel.grid(row = 9, column = 2, columnspan = 5, sticky = W+E)
         self.classifyBtn = Button(self.classifyPanel, text='Run Classification', width = 25, command = self.ClassifySingleImage)
@@ -124,14 +125,14 @@ class GUI:
         #self.goBtn.pack(side = LEFT)
 
     def prevImage(self, event = None):
-        print("previous image")
+        #print("previous image")
         if self.curImgNumber > 0:
             self.curImgNumber -= 1
             self.imageListbox.see(self.curImgNumber)
             self.LoadImage(self.imageList[self.curImgNumber])
 
     def nextImage(self, event = None):
-        print("next image")
+        #print("next image")
         if self.curImgNumber < self.totalImgNumber - 1:
            self.curImgNumber += 1
            self.imageListbox.see(self.curImgNumber)
@@ -145,33 +146,32 @@ class GUI:
             self.LoadImage(self.imageList[self.curImgNumber])
 
     def ClassifySingleImage(self):
-        #print("classify single image")
+        print("classify single image")
 
-        messagebox.showinfo("Results", "I don't know")
+        #messagebox.showinfo("Results", "I don't know")
 
 
     def ClassifyAllImages(self):
         #print("classify all images")
-        self.resultList = []
-        for i in range(self.totalImgNumber):
-            name = self.imageList[i] 
-            #self.resultList.append(var)
-            #self.resultList
-            #print(self.ResultList[0])
+        if (self.totalImgNumber!= 0):
+            self.resultList = []
+            for i in range(self.totalImgNumber):
+                name = self.imageList[i] 
+                if name != "":
+                    if self.ImgDir != "":
+                        fileDirectory = self.ImgDir + name
+                    else:
+                        fileDirectory = self.defaultImgDir + name
+                    result = "B" if self.Classify(fileDirectory) == 0 else "M"
+                    self.resultList.append(result)
+            self.imageResultListStringVar.set(value = self.resultList)
+            self.LoadImage(self.imageList[self.curImgNumber])
+        else:
+            messagebox.showinfo("Error", "No images in the selected directory")
 
-            #messagebox.showinfo("Results", "I don't know")
-            if name != "":
-                if self.ImgDir != "":
-                    fileDirectory = self.ImgDir + name
-                else:
-                    fileDirectory = self.defaultImgDir + name
-                result = "B" if self.Classify(fileDirectory) == 0 else "M"
-                self.resultList.append(result)
-        self.imageResultListStringVar.set(value = self.resultList)
 
     def Classify(self, fileDirectory):
         return random.randint(0, 1)
-
 
 
     def ImportFolder(self):
@@ -205,10 +205,16 @@ class GUI:
                 filename = self.ImgDir + name
             else:
                 filename = self.defaultImgDir + name
-            self.img = ImageTk.PhotoImage(Image.open(filename))
-
-            self.canvas.config(width = max(self.img.width(), 300), height = max(self.img.height(), 300))
+            self.img = ImageTk.PhotoImage(Image.open(filename).resize((385, 253), Image.ANTIALIAS))
+            self.canvas.config(width = 385, height = 253)
             self.canvas.create_image(0, 0, image = self.img, anchor=NW)
+            if self.resultList[self.curImgNumber] == "":
+                self.singleImageResult.set(value = "Not classified yet")
+            elif self.resultList[self.curImgNumber] == "B" :
+                self.singleImageResult.set(value = "Benign tumor")
+            elif self.resultList[self.curImgNumber] == "M" :
+                self.singleImageResult.set(value = "Malignant tumor")
+            
 
     def DebugProduceFakeResult(self):
         if (self.totalImgNumber != 0):
@@ -229,8 +235,9 @@ class GUI:
             for image in self.imageFolderDir:
                 print(image)
                 self.imageList.append(image)
-                self.UpdateListboxImage()
+                self.imgNameListStringVar.set(value = self.imageList)
             self.totalImgNumber = len(self.imageList)
+            self.resultList = [""]*self.totalImgNumber
         else:
             messagebox.showinfo("Warning", "Folder not loaded")
 
@@ -240,11 +247,16 @@ class GUI:
         for image in self.imageFolderDir:
             print(image)
             self.imageList.append(image)
-            self.UpdateListboxImage()
+         
+        #self.UpdateListboxImage()
         self.totalImgNumber = len(self.imageList)
-
-    def UpdateListboxImage(self):
+        self.resultList = [""]*self.totalImgNumber
         self.imgNameListStringVar.set(value = self.imageList)
+        
+   # def UpdateListboxImage(self):
+       
+
+
         #self.imageListbox.delete(0,END)
         #for image in self.imageList:
         #    self.imageListbox.insert(END, image)
