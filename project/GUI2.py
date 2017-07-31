@@ -4,19 +4,23 @@ from tkinter import ttk, filedialog, messagebox
 #import matplotlib as mp
 from os import listdir
 from PIL import ImageTk, Image
+import random
 
 class GUI:
     def __init__(self, master):
 
         # Variables
-        self.imageNameMsg = StringVar()
+        self.imageNameListbox = StringVar()
+        self.imageResultListbox = StringVar()
         self.entryFolderName = StringVar()
         self.entryResultName = StringVar()
         self.totalImgNumber = 0
         self.curImgNumber = 0
         self.imageList = []
+        self.resultList = []
+        self.imageResultList = []
         self.imageFolderDir = ''
-        self.cancerResultList = []
+        
 
         self.img = None
         self.img_label = None
@@ -37,16 +41,17 @@ class GUI:
         for column in range(6):
             self.frame.grid_columnconfigure(column, minsize = 15)
         self.frame.grid_columnconfigure(0, minsize = 200)
+        self.frame.grid_columnconfigure(1, minsize = 5)
 
         # Title (maybe not needed?)
         self.labelTitle = Label(self.frame, text="Cancer Classifier v1.0")
-        self.labelTitle.grid(row = 0, column = 3, sticky = E)
+        self.labelTitle.grid(row = 0, column = 3, sticky = W)
 
         # dir entry & load
         self.labelFolder = Label(self.frame, text = "Image Folder Dir:")
         self.labelFolder.grid(row = 1, column = 0, sticky = E)
         self.entryFolder = Entry(self.frame, textvariable = self.entryFolderName)
-        self.entryFolder.grid(row = 1, column = 1, columnspan = 4,sticky = W+E)
+        self.entryFolder.grid(row = 1, column = 1, columnspan = 4, sticky = W+E)
         self.btnFolder = Button(self.frame, text = "Load", command = self.LoadFromDir)
         self.btnFolder.grid(row = 1, column = 5, sticky = W)
         self.btnFolder = Button(self.frame, text = "DebugLoad", command = self.LoadDir)
@@ -62,33 +67,30 @@ class GUI:
         # main panel for labeling
         self.labelFolder = Label(self.frame, text = "Image in the folder:")
         self.labelFolder.grid(row = 3, column = 0, sticky = S)
-        lists = StringVar(value=self.imageList)
-        self.imageListbox = Listbox(self.frame, listvariable= lists, height=5)
+        self.imgNameListStringVar = StringVar(value = self.imageList)
+        self.imageListbox = Listbox(self.frame, listvariable = self.imgNameListStringVar, height=5)
         self.imageListbox.grid(row = 4, column = 0, rowspan = 5 , sticky=(N,S,E,W))
-        self.imageNameLabel = Label(self.frame, textvariable = self.imageNameMsg)
+        self.imageNameLabel = Label(self.frame, textvariable = self.imageNameListbox)
         self.imageNameLabel.grid(row = 4, column = 3, columnspan = 3, sticky = W)
+
+        # Result panel 
+        self.labelResultList = Label(self.frame, text = "Results:")
+        self.labelResultList.grid(row = 3, column = 1, sticky = S)
+        self.imageResultListStringVar = StringVar(value = self.resultList)
+        self.imageResultListbox = Listbox(self.frame, listvariable = self.imageResultListStringVar, height = 5, width = 8)
+        self.imageResultListbox.grid(row = 4, column = 1, rowspan = 5 , sticky=(N,S,E,W))
+        self.imageNameLabel = Label(self.frame, textvariable = self.imageNameListbox)
+        self.imageNameLabel.grid(row = 4, column = 3, columnspan = 3, sticky = W)
+
 
         #self.imageListbox.bind('<<ListboxSelect>>', self.DisplaySelectedImageName)
         self.imageListbox.bind('<Double-1>',  self.ListboxSelected)
-
 
         # canvas
         self.canvas = Canvas(self.frame, background='white')
         self.canvas.grid(row = 5, column = 3, rowspan = 2, columnspan = 3)
 
-        '''
-        self.btnAdd = Button(self.frame, text = "Add", command = self.DebugIncreaseList)
-        self.btnAdd.grid(row = 11, column = 3, sticky=(N,S,E,W))
 
-        self.btnUpdate = Button(self.frame, text = "Update", command = self.UpdateListboxImage)
-        self.btnUpdate.grid(row = 11, column = 4, sticky=(N,S,E,W))
-
-        self.btnUpdate = Button(self.frame, text = "ImportFolder", command = self.ImportFolder)
-        self.btnUpdate.grid(row = 11, column = 5, sticky=(N,S,E,W))
-
-        self.btnClose = Button(self.frame, text = "Load", command = master.quit)
-        self.btnClose.grid(row = 11, column = 6, sticky=(N,S,E,W))
-        '''
         self.ctrPanel = Frame(self.frame)
         self.ctrPanel.grid(row = 7, column = 2, columnspan = 5, sticky = W+E)
         self.prevBtn = Button(self.ctrPanel, text='<< Prev', width = 10, command = self.prevImage)
@@ -108,9 +110,9 @@ class GUI:
 
         self.classifyPanel = Frame(self.frame)
         self.classifyPanel.grid(row = 9, column = 2, columnspan = 5, sticky = W+E)
-        self.classifyBtn = Button(self.classifyPanel, text='Run Classification', width = 25, command = self.classifySingleImage)
+        self.classifyBtn = Button(self.classifyPanel, text='Run Classification', width = 25, command = self.ClassifySingleImage)
         self.classifyBtn.pack(side = LEFT, padx = 5, pady = 3)
-        self.classifyAllBtn = Button(self.classifyPanel, text='Run Classification on All', width = 30, command = self.classifyAllImages)
+        self.classifyAllBtn = Button(self.classifyPanel, text='Run Classification on All', width = 30, command = self.ClassifyAllImages)
         self.classifyAllBtn.pack(side = LEFT, padx = 5, pady = 3)
         #self.progLabel = Label(self.ctrPanel, text = "Progress:     /    ")
         #self.progLabel.pack(side = LEFT, padx = 5)
@@ -142,14 +144,35 @@ class GUI:
             self.curImgNumber = idx
             self.LoadImage(self.imageList[self.curImgNumber])
 
-    def classifySingleImage(self):
+    def ClassifySingleImage(self):
         #print("classify single image")
+
         messagebox.showinfo("Results", "I don't know")
 
 
-    def classifyAllImages(self):
+    def ClassifyAllImages(self):
         #print("classify all images")
-        messagebox.showinfo("Results", "I don't know")
+        self.resultList = []
+        for i in range(self.totalImgNumber):
+            name = self.imageList[i] 
+            #self.resultList.append(var)
+            #self.resultList
+            #print(self.ResultList[0])
+
+            #messagebox.showinfo("Results", "I don't know")
+            if name != "":
+                if self.ImgDir != "":
+                    fileDirectory = self.ImgDir + name
+                else:
+                    fileDirectory = self.defaultImgDir + name
+                result = "B" if self.Classify(fileDirectory) == 0 else "M"
+                self.resultList.append(result)
+        self.imageResultListStringVar.set(value = self.resultList)
+
+    def Classify(self, fileDirectory):
+        return random.randint(0, 1)
+
+
 
     def ImportFolder(self):
         self.imageFolderDir = listdir(self.defaultImgDir)
@@ -168,51 +191,29 @@ class GUI:
         if len(idxs) == 1:
             idx = int(idxs[0])
             self.curImgNumber = idx
-            #print("select index %d" % (idx))
             self.imageListbox.see(idx)
             name = self.imageList[idx] 
             self.LoadImage(name)       
 
 
     def LoadImage(self, name):
-
         if name != "":
             self.progLabel.config(text = "%04d/%04d" %(self.curImgNumber + 1, self.totalImgNumber))
-            self.imageNameMsg.set("Image Loaded: %s" % (name))
+            self.imageNameListbox.set("Image Loaded: %s" % (name))
 
             if self.ImgDir != "":
                 filename = self.ImgDir + name
             else:
                 filename = self.defaultImgDir + name
-
             self.img = ImageTk.PhotoImage(Image.open(filename))
-            #Canvas_Image = self.canvas.create_image(100,150,image = self.img)
 
             self.canvas.config(width = max(self.img.width(), 300), height = max(self.img.height(), 300))
             self.canvas.create_image(0, 0, image = self.img, anchor=NW)
-            #self.canvas.config(text = "%04d/%04d" %(2, 5))
 
-    '''
-    def loadImage(self):
+    def DebugProduceFakeResult(self):
+        if (self.totalImgNumber != 0):
+            print(self.ResultList)
 
-        idxs = self.imageListbox.curselection()
-        if len(idxs) == 1:
-            idx = int(idxs[0])
-            self.imageListbox.see(idx)
-            name = self.imageList[idx]
-            self.imageNameMsg.set("Image Loaded: %s" % (name))
-
-            if name != "":
-                filename = self.initdir + name
-                self.img = ImageTk.PhotoImage(Image.open(filename))
-                self.canvas.config(width = max(self.img.width(), 400), height = max(self.img.height(), 400))
-                self.canvas.create_image(0, 0, image = self.tkimg, anchor=NW)
-                self.progLabel.config(text = "%04d/%04d" %(self.cur, self.total))
-    '''
-
-    def Classify(self):
-        messagebox.showinfo("Results", "I don't know")
-        self.updateListboxImage()
 
     def LoadFromDir(self, dbg = False):
         result = filedialog.askdirectory(title = "Select a Folder to import images")
@@ -243,10 +244,10 @@ class GUI:
         self.totalImgNumber = len(self.imageList)
 
     def UpdateListboxImage(self):
-        self.imageListbox.delete(0,END)
-        for image in self.imageList:
-            self.imageListbox.insert(END, image)
-
+        self.imgNameListStringVar.set(value = self.imageList)
+        #self.imageListbox.delete(0,END)
+        #for image in self.imageList:
+        #    self.imageListbox.insert(END, image)
 
 if __name__ == '__main__':
     root = Tk()
