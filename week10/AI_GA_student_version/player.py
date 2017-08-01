@@ -66,7 +66,7 @@ class Player:
         valid = False
         while not valid:
             a = deepcopy(self)
-            for _ in range(3):
+            for _ in range(5):
                 index = randint(0,6)
                 other = significant_other.attributes.get_attribute(index)
                 a.attributes.change_attribute(index,other)
