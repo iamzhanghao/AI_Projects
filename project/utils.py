@@ -85,7 +85,7 @@ class Dataset:
                 'test_label': None
             }
 
-            self.init_dataset(data,crop,num_of_imgs)
+            self.init_dataset(data, crop, num_of_imgs)
 
         else:
             self.dataset = np.load(path)
@@ -103,8 +103,7 @@ class Dataset:
             'test': self.dataset['test_data'].shape[0]
         }
 
-    def init_dataset(self,data,crop,num_of_imgs):
-
+    def init_dataset(self, data, crop, num_of_imgs):
 
         data_arr = []
         label_arr = []
@@ -116,7 +115,8 @@ class Dataset:
             if count % 200 == 0:
                 print("Progress = ", round(count / len(data['train']) * 100, 2), "%")
 
-            imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True)
+            imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True,
+                               sub_mean=True)
             for img in imgs:
                 data_arr.append(img)
                 label_arr.append(entry[1])
@@ -140,7 +140,8 @@ class Dataset:
         data_arr = []
         label_arr = []
         for entry in data['val']:
-            imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True)
+            imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True,
+                               sub_mean=True)
             data_arr.append([])
             label_arr.append([])
 
@@ -157,7 +158,8 @@ class Dataset:
         data_arr = []
         label_arr = []
         for entry in data['test']:
-            imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True)
+            imgs = random_crop(entry[0], patch_size=crop, num_of_imgs=num_of_imgs, do_rotate=True, do_mirror=True,
+                               sub_mean=True)
             data_arr.append([])
             label_arr.append([])
             for img in imgs:
@@ -170,7 +172,7 @@ class Dataset:
         print("Test Label: ", self.dataset['test_label'].shape)
 
     def save(self, path):
-        print("Saving dataset to "+path)
+        print("Saving dataset to " + path)
         np.save(path, self.dataset)
 
     def next_batch(self, type='train', batch_size=64):
@@ -216,10 +218,30 @@ def mirror(img, p=0.5):
         return img
 
 
-def random_crop(path, patch_size, num_of_imgs, do_rotate=False, do_mirror=False):
+def get_image_mean(img):
+    r, g, b = 0, 0, 0
+    count = 0
+    img_np = np.array(img)
+    # print(img_np.shape)
+
+    for x in range(img_np.shape[0]):
+        for y in range(img_np.shape[1]):
+            temp = img_np[x][y]
+
+            tempr, tempg, tempb = temp[0], temp[1], temp[2]
+            r += tempr
+            g += tempg
+            b += tempb
+            count += 1
+    # calculate averages
+    return np.array([int((r / count)), int((g / count)), int((b / count))])
+
+
+def random_crop(path, patch_size, num_of_imgs, do_rotate=False, do_mirror=False, sub_mean=False):
     im = Image.open(path)
     size = im.size[0] / 2, im.size[1] / 2
     im.thumbnail(size)
+    mean = get_image_mean(im)
 
     imgs = []
     for _ in range(num_of_imgs):
@@ -231,6 +253,8 @@ def random_crop(path, patch_size, num_of_imgs, do_rotate=False, do_mirror=False)
             new_img = rotate(new_img)
         if do_mirror:
             new_img = mirror(new_img)
+        if sub_mean:
+            new_img = new_img - mean
 
         imgs.append(np.array(new_img))
 
@@ -239,11 +263,20 @@ def random_crop(path, patch_size, num_of_imgs, do_rotate=False, do_mirror=False)
 
 def prepare():
     # #
-    data = get_data(split="2", size="100X", platform="Windows", user="Hao")
+    data = get_data(split="1", size="100X", platform="Windows", user="Hao")
     #
-    dataset = Dataset(data, crop=64, num_of_imgs=100)
-    dataset.save("C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset3.npy")
+    dataset = Dataset(data, crop=64, num_of_imgs=10)
+    dataset.save("C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset6.npy")
+
+
+def print_path():
+    data = get_data(split="1", size="100X", platform="Windows", user="Hao")
+    for i in data['test']:
+        a = i[0].replace("\\", "\\\\")
+        print("\"", end="")
+        print(a, end="\",\n")
 
 
 if __name__ == "__main__":
-    prepare()
+    # prepare()
+    print_path()

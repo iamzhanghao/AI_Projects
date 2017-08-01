@@ -2,11 +2,12 @@ from project.haonet import HaoNet
 from project.utils import *
 import tensorflow as tf
 
-# dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset3.npy")
+# dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset6.npy")
+
+num_of_imgs = 100
 
 
-num_of_imgs= 100
-data = get_data(split="2", size="100X", platform="Windows", user="Hao")
+data = get_data(split="1", size="40X", platform="Windows", user="Hao")
 dataset = Dataset(data, crop=64, num_of_imgs=num_of_imgs)
 
 
@@ -53,7 +54,7 @@ def start_new(filename, times, num_of_images):
 
 def continuous(filename, times, num_of_images):
     for _ in range(times):
-        train(num_iterations=4 * 10 * num_of_images,
+        train(num_iterations=100 * num_of_images,
               batchsize=128,
               load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy",
               save_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
@@ -61,9 +62,6 @@ def continuous(filename, times, num_of_images):
         test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
 
 
-# continuous(filename="params1", times=20,num_of_images=100)
-
-start_new(filename="params3",times=20,num_of_images=num_of_imgs)
-
-# validate(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params2.npy")
-# test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params2.npy")
+start_new(filename="params6", times=100, num_of_images=num_of_imgs)
+#
+# continuous(filename="params5", times=20,num_of_images=num_of_imgs)

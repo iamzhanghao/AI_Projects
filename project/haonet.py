@@ -46,7 +46,6 @@ class HaoNet:
                     'fc1': tf.Variable(params['biases']['fc1']),
                     'fc2': tf.Variable(params['biases']['fc2'])
                 }
-
             }
 
         self.create()
@@ -82,6 +81,8 @@ class HaoNet:
 
         # Number of classes, one class for each of 10 digits.
         self.num_classes = 2
+
+        self.KEEPPROB = 0.7
 
     def plot_images(self, img):
         img = Image.fromarray(img)
@@ -141,6 +142,8 @@ class HaoNet:
         # Use ReLU?
         if use_relu:
             layer = tf.nn.relu(layer)
+
+        layer = tf.nn.dropout(layer,self.KEEPPROB)
 
         return layer, weights, biases
 
@@ -205,6 +208,7 @@ class HaoNet:
         # This adds some non-linearity to the formula and allows us
         # to learn more complicated functions.
         layer = tf.nn.relu(layer)
+        layer = tf.nn.dropout(layer,self.KEEPPROB)
 
         # Note that ReLU is normally executed before the pooling,
         # but since relu(max_pool(x)) == max_pool(relu(x)) we can
@@ -279,16 +283,12 @@ class HaoNet:
                                                          weights=self.params['weights']['fc2'],
                                                          biases=self.params['biases']['fc2'])
 
-        self.dropout = tf.nn.dropout(self.layer_fc2,0.5)
 
-
-
-
-        self.y_pred = tf.nn.softmax(self.dropout)
+        self.y_pred = tf.nn.softmax(self.layer_fc2)
 
         self.y_pred_cls = tf.argmax(self.y_pred, dimension=1)
 
-        self.cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.dropout,
+        self.cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.layer_fc2,
                                                                      labels=self.y_true)
         self.cost = tf.reduce_mean(self.cross_entropy)
 
@@ -361,9 +361,11 @@ class HaoNet:
 
             y_true_cls = self.dataset.dataset[mode + '_label'][i][0][1]
             f = float(sum(y_pre_cls)) / len(y_pre_cls)
-            y_pre_cls = 0
+
             if f > 0.5:
                 y_pre_cls = 1
+            else:
+                y_pre_cls = 0
             if y_pre_cls == y_true_cls:
                 correct += 1
         print(mode + " accuracy = " + str(round(float(correct) / total * 100, 2)) + "%")
