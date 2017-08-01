@@ -31,6 +31,15 @@ class Player:
         ## Implement a method to change any one of the attribute's skill point ##
         ## Can be done randomly or deterministically ##
         ## Can also be done by swapping the skill point of one random attribute category to another ##
+        # swapping
+        rand_a = randint(0,6)
+        rand_b = randint(0,6)
+
+        a = self.attributes.get_attribute(rand_a)
+        b = self.attributes.get_attribute(rand_b)
+        self.attributes.change_attribute(rand_a,b)
+        self.attributes.change_attribute(rand_b,a)
+
 
         # mutate here is:
         # if sum(self.attributes.attribute_level) <= self.attributes.attribute_points_limit
@@ -53,6 +62,19 @@ class Player:
         # sum(self.attributes.attribute_level) <= self.attributes.attribute_points_limit
         # if this does not hold, then undo the swap!
         # stop swapping if 5 attributes were swapped, or if one has gone through all 7 attributes
+
+        valid = False
+        while not valid:
+            a = deepcopy(self)
+            for _ in range(3):
+                index = randint(0,6)
+                other = significant_other.attributes.get_attribute(index)
+                a.attributes.change_attribute(index,other)
+            if sum(a.attributes.get_all_attributes()) <= a.attributes.attribute_points_limit:
+                self = a
+                valid = True
+
+
 
 
         return None

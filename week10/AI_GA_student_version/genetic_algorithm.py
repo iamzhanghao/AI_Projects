@@ -72,16 +72,16 @@ class GeneticAlgorithm:
         ###TO DO###
         ## This method creates a new generation ##
         ## 1. Get the top x% fittest players
-        top_fit_number = int(self.population_size * 0.5)
+        top_fit_number = int(self.population_size * 0.8)
         sample = self.population[:top_fit_number][:]
         self.population = []
 
 
-        for _ in range(int(self.population_size*0.6)):
+        for _ in range(int(self.population_size*0.8)):
             self.population.append(self.clone(sample))
         for _ in range(int(self.population_size*0.05)):
             self.population.append(self.mutation(sample))
-        for _ in range(int(self.population_size*0.35)):
+        for _ in range(int(self.population_size*0.15)):
             self.population.append(self.crossover(sample))
 
         ## 2. Create a new population based on these "top-fit" parents
@@ -97,7 +97,7 @@ if __name__ == '__main__':
     use_multinomial = True
 
     G = GeneticAlgorithm(population_size=100, probability_game=probability_game, use_multinomial=use_multinomial)
-    fittest_player = G.run_genetic_algorithm(10)
+    fittest_player = G.run_genetic_algorithm(20)
     fittest_player.attributes.print_attributes()
 
     ## try out the performance of the fittest player several times
