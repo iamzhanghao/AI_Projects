@@ -70,16 +70,16 @@ class GUI:
         self.labelFolder = Label(self.frame, text = "Image Folder Path:")
         self.labelFolder.grid(row = 1, column = 0, sticky = E)
         self.entryFolder = Entry(self.frame, textvariable = self.entryFolderName)
-        self.entryFolder.grid(row = 1, column = 1, columnspan = 4, sticky = W+E)
+        self.entryFolder.grid(row = 1, column = 1, columnspan = 4, sticky = (W,E))
         self.btnFolder = Button(self.frame, text = "Load", command = self.LoadFromDir, width = 8)
-        self.btnFolder.grid(row = 1, column = 5, sticky = W)
+        self.btnFolder.grid(row = 1, column = 5, sticky = E)
 
         self.labelResult = Label(self.frame, text = "Classification Result Path:")
         self.labelResult.grid(row = 2, column = 0, sticky = E)
-        self.entryResultDir = Entry(self.frame, textvariable = self.entryResultName)
-        self.entryResultDir.grid(row = 2, column = 1, columnspan = 4,sticky = W+E)
+        self.entryResultDir = Entry(self.frame, textvariable = self.entryResultName, width = 70)
+        self.entryResultDir.grid(row = 2, column = 1, columnspan = 4,  sticky = W+E )
         self.btnFolder = Button(self.frame, text = "Choose", command = self.SelectResultFolder, width = 8)
-        self.btnFolder.grid(row = 2, column = 5, sticky = W)
+        self.btnFolder.grid(row = 2, column = 5, sticky = E)
 
         # main panel for labeling
         self.labelFolder = Label(self.frame, text = "Image in the folder:")
@@ -97,7 +97,7 @@ class GUI:
         self.imageResultListbox = Listbox(self.frame, listvariable = self.imageResultListStringVar, height = 5, width = 8)
         self.imageResultListbox.grid(row = 4, column = 1, rowspan = 5 , sticky=(N,S,E,W))
         self.labelImageResult = Label(self.frame, textvariable = self.singleImageResult,  fg = "blue", bg = "yellow", font = "Verdana 10 bold")
-        self.labelImageResult.grid(row = 4, column = 5, sticky = E)
+        self.labelImageResult.grid(row = 4, column = 4, columnspan = 2, sticky = E)
         self.classifyResult = Label(self.frame, textvariable = self.csvSavedText)
         self.classifyResult.grid(row = 10, column = 2, columnspan = 5 , sticky = E)
 
