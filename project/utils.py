@@ -3,6 +3,9 @@ import numpy as np
 from PIL import Image
 from PIL import ImageOps
 import random
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
 
 # from sklearn.utils import shuffle
 
@@ -276,7 +279,44 @@ def print_path():
         print("\"", end="")
         print(a, end="\",\n")
 
+def recreate_image(palette, labels, w, h):
+    d = palette.shape[1]
+    image = np.zeros((w, h, d))
+    label_idx = 0
+    for i in range(w):
+        for j in range(h):
+            image[i][j] = palette[labels[label_idx]]
+            label_idx += 1
+    return image
+
+def clusterFuck(path):
+    img = mpimg.imread(path)
+    img = img[:, :, :3]
+
+    w, h, d = tuple(img.shape)
+    image_array = np.reshape(img, (w * h, d))
+    sample = np.zeros(shape=(1000, 3))
+    for i in range(1000):
+        sample[i] = image_array[random.randrange(0, w * h)]
+
+    kmeans = KMeans(n_clusters=2, random_state=0).fit(sample)
+    kmeans_palette = kmeans.cluster_centers_
+    kmeans_labels = kmeans.predict(image_array)
+
+    plt.figure(2)
+    plt.clf()
+    ax = plt.axes([0, 0, 1, 1])
+    plt.axis('off')
+    plt.title('Compressed image (K-Means)')
+    im = recreate_image(kmeans_palette, kmeans_labels, w, h)
+    # im=Image.fromarray(im.astype('uint8'), 'RGB')
+    # im.show()
+    plt.imshow(im)
+    plt.show()
+
 
 if __name__ == "__main__":
-    # prepare()
-    print_path()
+    prepare()
+    # print_path()
+    # pic = "C:\\Users\Hao\Desktop\SOB_B_A-14-22549AB-40-009.png"
+    # clusterFuck(pic)

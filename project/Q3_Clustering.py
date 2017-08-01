@@ -11,8 +11,8 @@ from PIL import Image
 pic = "C:\\Users\Hao\Desktop\SOB_B_A-14-22549AB-40-009.png"
 img = mpimg.imread(pic)
 img = img[:, :, :3]
-# img = Image.open("C:\\Users\Hao\Desktop\SOB_B_A-14-22549AB-40-009.png")
-# img = np.array(img)
+
+
 w, h, d = tuple(img.shape)
 image_array = np.reshape(img, (w * h, d))
 
@@ -51,7 +51,6 @@ plt.axis('off')
 plt.title('Compressed image (K-Means)')
 im=recreate_image(kmeans_palette, kmeans_labels, w, h)
 plt.imshow(im)
-print(im.shape)
 # random_palette = np.zeros(shape=(32, 3))
 # for i in range(32):
 #     random_palette[i] = image_array[random.randrange(0, w * h)]
