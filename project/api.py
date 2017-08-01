@@ -52,6 +52,7 @@ def run(params_path, list_of_imgs_path, y_trues=None):
     testset = []
     for img_path in list_of_imgs_path:
         imgs = random_crop(path=img_path, patch_size=64, num_of_imgs=100, do_rotate=True, do_mirror=True, sub_mean=True)
+        print(imgs[0].shape)
         testset.append(np.array(imgs))
 
     testset = np.array(testset)
@@ -82,4 +83,5 @@ def run(params_path, list_of_imgs_path, y_trues=None):
     return results
 
 if __name__ == "__main__":
-    run("C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params5.npy",list_of_imgs_path)
+    results= run("C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params5.npy",list_of_imgs_path)
+    print(len(results))

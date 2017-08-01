@@ -62,6 +62,6 @@ def continuous(filename, times, num_of_images):
         test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
 
 
-start_new(filename="params6", times=100, num_of_images=num_of_imgs)
+# start_new(filename="params6", times=100, num_of_images=num_of_imgs)
 #
-# continuous(filename="params5", times=20,num_of_images=num_of_imgs)
+continuous(filename="params5", times=20,num_of_images=num_of_imgs)
