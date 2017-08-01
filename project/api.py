@@ -86,4 +86,6 @@ if __name__ == "__main__":
         "D:\\BreaKHis_v1\\histology_slides\\breast\\malignant\\SOB\\mucinous_carcinoma\\SOB_M_MC_14-19979C\\100X\\SOB_M_MC-14-19979C-100-011.png",
         "D:\\BreaKHis_v1\\histology_slides\\breast\\benign\\SOB\\phyllodes_tumor\\SOB_B_PT_14-21998AB\\100X\\SOB_B_PT-14-21998AB-100-009.png"]
     results = run("C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params5.npy", list_of_imgs_path)
+    
+    
     print(len(results))
