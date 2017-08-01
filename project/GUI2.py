@@ -1,10 +1,11 @@
 from tkinter import * 
-from tkinter import ttk, filedialog, messagebox
+from tkinter import ttk, filedialog, messagebox, Toplevel
 #Tk, Label, Button, filedialog, messagebox, Canvas
 #import matplotlib as mp
 from os import listdir
 from PIL import ImageTk, Image
 import random
+import csv
 
 class GUI:
     def __init__(self, master):
@@ -21,14 +22,29 @@ class GUI:
         self.resultList = []
         self.imageResultList = []
         self.imageFolderDir = ''
-        
+        self.numberOfRuns = 0
+        #self.window
 
         self.img = None
         self.img_label = None
         self.defaultImgDir = r"C:/Users/IceFox/AI_core/Project/GUI/TestGUI01/40X/"
-        self.ImgDir = ""
+        self.imgDir = ""
+        self.instructionText =r"""                    ----Instructions----  
 
-        # GUI
+ 1.     Select a folder where all the photos    
+         locate (png format).                    
+ 2.     Click Load button to import images.    
+ 3.     You can navigate through the imported  
+         images and run classification on each
+         of them.                              
+ 4.     Specify a folder where you would like  
+         the classification results to be saved.
+ 5.     Whenever you run Classification on All,
+         the results will automaticaly be saved  
+         to the specified folder in csv format.
+ """
+
+                                        # GUI
         self.master = master
         self.master.resizable(width = FALSE, height = FALSE)
         self.master.title("Cancer Classifier")
@@ -45,24 +61,22 @@ class GUI:
         self.frame.grid_columnconfigure(1, minsize = 5)
 
         # Title (maybe not needed?)
-        self.labelTitle = Label(self.frame, text= "Cancer Classifier v1.0")
+        self.labelTitle = Label(self.frame, text= "Cancer Classifier", font = "Verdana 14 bold")
         self.labelTitle.grid(row = 0, column = 3, sticky = W)
 
         # dir entry & load
-        self.labelFolder = Label(self.frame, text = "Image Folder Dir:")
+        self.labelFolder = Label(self.frame, text = "Image Folder Path:")
         self.labelFolder.grid(row = 1, column = 0, sticky = E)
         self.entryFolder = Entry(self.frame, textvariable = self.entryFolderName)
         self.entryFolder.grid(row = 1, column = 1, columnspan = 4, sticky = W+E)
-        self.btnFolder = Button(self.frame, text = "Load", command = self.LoadFromDir)
+        self.btnFolder = Button(self.frame, text = "Load", command = self.LoadFromDir, width = 8)
         self.btnFolder.grid(row = 1, column = 5, sticky = W)
-        #self.btnFolder = Button(self.frame, text = "DebugLoad", command = self.LoadDir)
-        #self.btnFolder.grid(row = 1, column = 6, sticky = W)
 
-        self.labelResult = Label(self.frame, text = "Classification Result Dir:")
+        self.labelResult = Label(self.frame, text = "Classification Result Path:")
         self.labelResult.grid(row = 2, column = 0, sticky = E)
         self.entryResultDir = Entry(self.frame, textvariable = self.entryResultName)
         self.entryResultDir.grid(row = 2, column = 1, columnspan = 4,sticky = W+E)
-        self.btnFolder = Button(self.frame, text = "Save", command = self.LoadDir)
+        self.btnFolder = Button(self.frame, text = "Choose", command = self.SelectResultFolder, width = 8)
         self.btnFolder.grid(row = 2, column = 5, sticky = W)
 
         # main panel for labeling
@@ -80,13 +94,15 @@ class GUI:
         self.imageResultListStringVar = StringVar(value = self.resultList)
         self.imageResultListbox = Listbox(self.frame, listvariable = self.imageResultListStringVar, height = 5, width = 8)
         self.imageResultListbox.grid(row = 4, column = 1, rowspan = 5 , sticky=(N,S,E,W))
-
-
         self.labelImageResult = Label(self.frame, textvariable = self.singleImageResult,  fg = "blue", bg = "yellow", font = "Verdana 10 bold")
         self.labelImageResult.grid(row = 4, column = 5, sticky = E)
 
         #self.imageListbox.bind('<<ListboxSelect>>', self.DisplaySelectedImageName)
         self.imageListbox.bind('<Double-1>',  self.ListboxSelected)
+
+        self.instructionBtn = Button(self.frame, text='Help', height = 1, width = 8, command = self.OpenInstructionsWindow)
+        self.instructionBtn.grid(row = 0, column = 6, sticky=(N,S,E,W))
+
 
         # canvas
         self.canvas = Canvas(self.frame, background='white')
@@ -111,9 +127,9 @@ class GUI:
 
         self.classifyPanel = Frame(self.frame)
         self.classifyPanel.grid(row = 9, column = 2, columnspan = 5, sticky = W+E)
-        self.classifyBtn = Button(self.classifyPanel, text='Run Classification', width = 25, command = self.ClassifySingleImage)
+        self.classifyBtn = Button(self.classifyPanel, text='Run Classification', height = 2, width = 20, command = self.ClassifySingleImage)
         self.classifyBtn.pack(side = LEFT, padx = 5, pady = 3)
-        self.classifyAllBtn = Button(self.classifyPanel, text='Run Classification on All', width = 30, command = self.ClassifyAllImages)
+        self.classifyAllBtn = Button(self.classifyPanel, text='Run Classification on All', height = 2, width = 20, command = self.ClassifyAllImages)
         self.classifyAllBtn.pack(side = LEFT, padx = 5, pady = 3)
         #self.progLabel = Label(self.ctrPanel, text = "Progress:     /    ")
         #self.progLabel.pack(side = LEFT, padx = 5)
@@ -153,21 +169,32 @@ class GUI:
 
     def ClassifyAllImages(self):
         #print("classify all images")
-        if (self.totalImgNumber!= 0):
+        if (self.entryFolderName.get() == ""):
+            messagebox.showinfo("Error", "Please import Image Folder first.")
+            return None
+
+        if (self.entryResultName.get() == ""):
+            messagebox.showinfo("Error", "Please select Classification Result folder first.") 
+            return None
+
+        if (self.totalImgNumber == 0):
+            messagebox.showinfo("Error", "No images in the selected directory!")
+            return None
+        else:
             self.resultList = []
             for i in range(self.totalImgNumber):
                 name = self.imageList[i] 
                 if name != "":
-                    if self.ImgDir != "":
-                        fileDirectory = self.ImgDir + name
+                    if self.imgDir != "":
+                        fileDirectory = self.imgDir + name
                     else:
                         fileDirectory = self.defaultImgDir + name
                     result = "B" if self.Classify(fileDirectory) == 0 else "M"
                     self.resultList.append(result)
             self.imageResultListStringVar.set(value = self.resultList)
             self.LoadImage(self.imageList[self.curImgNumber])
-        else:
-            messagebox.showinfo("Error", "No images in the selected directory")
+
+            
 
 
     def Classify(self, fileDirectory):
@@ -201,8 +228,8 @@ class GUI:
             self.progLabel.config(text = "%04d/%04d" %(self.curImgNumber + 1, self.totalImgNumber))
             self.imageNameListbox.set("Image Loaded: %s" % (name))
 
-            if self.ImgDir != "":
-                filename = self.ImgDir + name
+            if self.imgDir != "":
+                filename = self.imgDir + name
             else:
                 filename = self.defaultImgDir + name
             self.img = ImageTk.PhotoImage(Image.open(filename).resize((385, 253), Image.ANTIALIAS))
@@ -224,18 +251,17 @@ class GUI:
     def LoadFromDir(self, dbg = False):
         result = filedialog.askdirectory(title = "Select a Folder to import images")
         if result != "" :
-            
             self.entryFolderName.set(result)
             print ("Loaded from: " + result)
-            self.ImgDir = result + "/"
-            self.imageFolderDir = [f for f in listdir(self.ImgDir) if re.match(r'.*\.png', f)]
-            if len(self.imageFolderDir) == 0:
+            self.imgDir = result + "/"
+            self.imageList = [f for f in listdir(self.imgDir) if re.match(r'.*\.png', f)]
+            if len(self.imageList) == 0:
                 messagebox.showinfo("Warning", "No png files in selected folder.")
-            self.imageList = []
-            for image in self.imageFolderDir:
+            #self.imageList = []
+            for image in self.imageList:
                 print(image)
-                self.imageList.append(image)
-                self.imgNameListStringVar.set(value = self.imageList)
+                #self.imageList.append(image)
+            self.imgNameListStringVar.set(value = self.imageList)
             self.totalImgNumber = len(self.imageList)
             self.resultList = [""]*self.totalImgNumber
         else:
@@ -252,11 +278,28 @@ class GUI:
         self.totalImgNumber = len(self.imageList)
         self.resultList = [""]*self.totalImgNumber
         self.imgNameListStringVar.set(value = self.imageList)
-        
+    
+    def OpenInstructionsWindow(self):
+        self.window = Toplevel(self.master)
+        self.window.resizable(width = FALSE, height = FALSE)
+        labelInstructionText = Label(self.window, text = self.instructionText, justify = LEFT, font = "Verdana 11")
+        labelInstructionText.pack()
+        destroyBtn = Button(self.window, text = "Close", command = self.window.destroy,  font = "Verdana 11")
+        destroyBtn.pack()
+
+    def SelectResultFolder(self):
+        result = filedialog.askdirectory(title = "Select a Folder to save results.")
+        if result != "" :
+            self.entryResultName.set(result)
+        else:
+            messagebox.showinfo("Warning", "Folder not selected.")
+
+
+    def SaveToCSV(self):
+
+        file = open('myfile.dat', 'w+')
+
    # def UpdateListboxImage(self):
-       
-
-
         #self.imageListbox.delete(0,END)
         #for image in self.imageList:
         #    self.imageListbox.insert(END, image)
