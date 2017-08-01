@@ -1,4 +1,4 @@
-from project.utils import *
+from utils import *
 import tensorflow as tf
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -7,7 +7,6 @@ from datetime import timedelta
 
 
 class HaoNet:
-
     def __init__(self, dataset, params=None):
         self.init_variables()
         self.dataset = dataset
@@ -47,7 +46,6 @@ class HaoNet:
                     'fc1': tf.Variable(params['biases']['fc1']),
                     'fc2': tf.Variable(params['biases']['fc2'])
                 }
-
             }
 
         self.create()
@@ -83,6 +81,8 @@ class HaoNet:
 
         # Number of classes, one class for each of 10 digits.
         self.num_classes = 2
+
+        self.KEEPPROB = 0.7
 
     def plot_images(self, img):
         img = Image.fromarray(img)
@@ -142,6 +142,8 @@ class HaoNet:
         # Use ReLU?
         if use_relu:
             layer = tf.nn.relu(layer)
+
+        layer = tf.nn.dropout(layer,self.KEEPPROB)
 
         return layer, weights, biases
 
@@ -206,6 +208,7 @@ class HaoNet:
         # This adds some non-linearity to the formula and allows us
         # to learn more complicated functions.
         layer = tf.nn.relu(layer)
+        layer = tf.nn.dropout(layer,self.KEEPPROB)
 
         # Note that ReLU is normally executed before the pooling,
         # but since relu(max_pool(x)) == max_pool(relu(x)) we can
@@ -279,6 +282,8 @@ class HaoNet:
                                                          use_relu=False,
                                                          weights=self.params['weights']['fc2'],
                                                          biases=self.params['biases']['fc2'])
+
+
         self.y_pred = tf.nn.softmax(self.layer_fc2)
 
         self.y_pred_cls = tf.argmax(self.y_pred, dimension=1)
@@ -341,18 +346,29 @@ class HaoNet:
         # Print the time-usage.
         print("Time usage: " + str(timedelta(seconds=int(round(time_dif)))))
 
-    def validate(self, session):
-        x, y = self.dataset.get_val()
+    def validate(self, session, mode):
+        correct = 0
+        total = len(self.dataset.dataset[mode + '_data'])
 
-        feed_dict_train = {self.x_image: x,
-                           self.y_true: y}
+        for i in range(total):
+            x = self.dataset.dataset[mode + '_data'][i]
+            y = self.dataset.dataset[mode + '_label'][i]
 
-        acc = session.run(self.accuracy, feed_dict=feed_dict_train)
+            feed_dict_train = {self.x_image: x,
+                               self.y_true: y}
 
-        print("Training Accuracy: ", acc)
+            y_pre_cls = session.run(self.y_pred_cls, feed_dict=feed_dict_train)
 
-    def test(self):
-        pass
+            y_true_cls = self.dataset.dataset[mode + '_label'][i][0][1]
+            f = float(sum(y_pre_cls)) / len(y_pre_cls)
+
+            if f > 0.5:
+                y_pre_cls = 1
+            else:
+                y_pre_cls = 0
+            if y_pre_cls == y_true_cls:
+                correct += 1
+        print(mode + " accuracy = " + str(round(float(correct) / total * 100, 2)) + "%")
 
     def classify(self):
         pass
