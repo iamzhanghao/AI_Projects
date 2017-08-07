@@ -1,22 +1,16 @@
-import numpy as np
-from PIL import Image
-from PIL import ImageOps
+from shutil import copyfile
+from project.utils import get_data
 
 
-# from project.utils import *
+data = get_data(split="1", size="40X", platform="Windows", user="Zhang Hao")
 
-# 1. random image cropping
-# input: path to image(700*460)
-# output: np array with shape [size,size,3]
+dst = ""
 
-
-# dataset = Dataset(path="C:\\Users\JunHao\OneDrive\#Term8\AIproject\project\saved_dataset\dataset1.npy")
-# img,l=dataset.next_batch(type='train', batch_size=64)
-# 2. mirror / rotate
-
-
-# 3. image mean
-#
-# 4. momentum
-#
-# 5. resize image to 350*230
+count = 0
+for testdata in data['test']:
+    if testdata[1] == [1,0]:
+        type_d = "B"
+    else:
+        type_d = "M"
+    copyfile(testdata[0], "C:\\Users\Hao\Desktop\\test1\\testfile_"+str(count)+"_"+type_d+".png")
+    count += 1

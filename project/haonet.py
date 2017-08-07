@@ -1,9 +1,9 @@
-from utils import *
 import tensorflow as tf
 from PIL import Image
 import matplotlib.pyplot as plt
 import time
 from datetime import timedelta
+from project.utils import *
 
 
 class HaoNet:
@@ -370,8 +370,52 @@ class HaoNet:
                 correct += 1
         print(mode + " accuracy = " + str(round(float(correct) / total * 100, 2)) + "%")
 
-    def classify(self):
-        pass
+    def classify(self, list_of_imgs_path):
+
+        results = []
+        testset = []
+        for img_path in list_of_imgs_path:
+            if check_size(img_path,64):
+                imgs = random_crop(path=img_path, patch_size=64, num_of_imgs=100, do_rotate=True, do_mirror=True,
+                                   sub_mean=True)
+                testset.append(np.array(imgs))
+            else:
+                testset.append("Error")
+        print(testset)
+
+
+        testset = np.array(testset)
+        print(testset.shape)
+
+        session = tf.Session()
+        session.run(tf.global_variables_initializer())
+
+        for i in range(testset.shape[0]):
+            if testset[i] != "Error":
+                x = testset[i]
+                y = []
+                for j in range(testset.shape[1]):
+                    y.append([0, 0])
+                y = np.array(y)
+
+                feed_dict = {self.x_image: x,
+                             self.y_true: y}
+
+                y_pre_cls = session.run(self.y_pred_cls, feed_dict=feed_dict)
+                f = float(sum(y_pre_cls)) / len(y_pre_cls)
+
+                if f > 0.5:
+                    y_pre_cls = 1
+                else:
+                    y_pre_cls = 0
+                results.append(y_pre_cls)
+                session.close()
+            else:
+                results.append("Error")
+            print(results)
+
+        return results
+
 
     def save_params(self, session, path):
         np.save(path, session.run(self.params))

@@ -39,16 +39,18 @@ class GUI:
          locate (png format).                    
  2.     Click Load button to import images.    
  3.     You can navigate through the imported  
-         images and run classification on each
-         of them.                              
+         images and run classification on them.                              
  4.     Specify a folder where you would like  
          the classification results to be saved.
- 5.     Whenever you run Classification on All,
+ 5.     Whenever you run the classification test,
          the results will automaticaly be saved  
          to the specified folder in csv format.
  """
+        #Developed by PingCheng 2017 
+                        #(Copyright Reserved)
+ #"""
 
-                                        # GUI
+        # GUI
         self.master = master
         self.master.resizable(width = FALSE, height = FALSE)
         self.master.title("Cancer Classifier")
@@ -87,10 +89,14 @@ class GUI:
         self.labelFolder = Label(self.frame, text = "Image in the folder:")
         self.labelFolder.grid(row = 3, column = 0, sticky = S)
         self.imgNameListStringVar = StringVar(value = self.imageList)
+
+
         self.imageListbox = Listbox(self.frame, listvariable = self.imgNameListStringVar, height=5)
         self.imageListbox.grid(row = 4, column = 0, rowspan = 5 , sticky=(N,S,E,W))
         self.imageNameLabel = Label(self.frame, textvariable = self.imageNameListbox)
         self.imageNameLabel.grid(row = 3, column = 3, columnspan = 3, sticky = W)
+        self.scrollbar = Scrollbar(self.frame)
+        self.scrollbar.grid(row = 4, column =7, rowspan = 5 , sticky=(N,S,E,W))
 
         # Result panel 
         self.labelResultList = Label(self.frame, text = "Results:")
@@ -132,9 +138,9 @@ class GUI:
 
         # classify actions panel
         self.classifyPanel = Frame(self.frame)
-        self.classifyPanel.grid(row = 9, column = 2, columnspan = 5, sticky = W+E)
-        self.classifyBtn = Button(self.classifyPanel, text='Run Classification', height = 2, width = 20, command = self.ClassifySingleImage)
-        self.classifyBtn.pack(side = LEFT, padx = 5, pady = 3)
+        self.classifyPanel.grid(row = 9, column = 3, columnspan = 5, sticky = W+E)
+        #self.classifyBtn = Button(self.classifyPanel, text='Run Classification', height = 2, width = 20, command = self.ClassifySingleImage)
+        #self.classifyBtn.pack(side = LEFT, padx = 5, pady = 3)
         self.classifyAllBtn = Button(self.classifyPanel, text='Run Classification on All', height = 2, width = 20, command = self.ClassifyAllImages)
         self.classifyAllBtn.pack(side = LEFT, padx = 5, pady = 3)
         
@@ -143,24 +149,37 @@ class GUI:
         if self.curImgNumber > 0:
             self.curImgNumber -= 1
             self.imageListbox.see(self.curImgNumber)
+            self.imageListbox.select_set(self.curImgNumber)
             self.LoadImage(self.imageList[self.curImgNumber])
+            if len(self.resultList) == self.totalImgNumber: 
+                self.imageResultListbox.see(self.curImgNumber)
+                self.imageResultListbox.select_set(self.curImgNumber)
 
     def nextImage(self, event = None):
         if self.curImgNumber < self.totalImgNumber - 1:
-           self.curImgNumber += 1
-           self.imageListbox.see(self.curImgNumber)
-           self.LoadImage(self.imageList[self.curImgNumber])
+            self.curImgNumber += 1
+            self.imageListbox.see(self.curImgNumber)
+            self.imageListbox.select_set(self.curImgNumber)
+            self.LoadImage(self.imageList[self.curImgNumber])
+            if len(self.resultList) == self.totalImgNumber: 
+                self.imageResultListbox.see(self.curImgNumber)
+                self.imageResultListbox.select_set(self.curImgNumber)
+
 
     def gotoImage(self):
         idx = int(self.idxEntry.get()) - 1
         if 0 <= idx and idx < self.totalImgNumber :
             self.curImgNumber = idx
             self.LoadImage(self.imageList[self.curImgNumber])
+            self.imageListbox.see(self.curImgNumber)
+            self.imageListbox.select_set(self.curImgNumber)
+            if len(self.resultList) == self.totalImgNumber: 
+                self.imageResultListbox.see(self.curImgNumber)
+                self.imageResultListbox.select_set(self.curImgNumber)
 
     def ClassifySingleImage(self):
         print("classify single image")
         #messagebox.showinfo("Results", "I don't know")
-
 
     def ClassifyAllImages(self):
         #print("classify all images")
@@ -187,15 +206,16 @@ class GUI:
                         fileDirectory = self.defaultImgDir + name
                     classifyDirList.append(fileDirectory)
             
-            classifyResults = Classify(classifyDirList)
+            classifyResults = self.Classify(classifyDirList)
             self.resultList = ["B" if f == 0 else "M" for f in classifyResults ]
 
             self.imageResultListStringVar.set(value = self.resultList)
             self.LoadImage(self.imageList[self.curImgNumber])
             self.SaveToCSV()
             
-    def Classify(self, list_of_imgs_path):
+    def Classify(self, list_of_imgs_path, y_trues=None):
 
+        params_path = getcwd() + "\saved_weights\params5.npy"
         haonet = HaoNet(dataset=None, params=params_path)
         results = []
         testset = []
@@ -203,10 +223,8 @@ class GUI:
             imgs = random_crop(path=img_path, patch_size=64, num_of_imgs=100, do_rotate=True, do_mirror=True, sub_mean=True)
             print(imgs[0].shape)
             testset.append(np.array(imgs))
-
         testset = np.array(testset)
         print(testset.shape)
-
         session = tf.Session()
         session.run(tf.global_variables_initializer())
 
@@ -216,7 +234,6 @@ class GUI:
             for j in range(testset.shape[1]):
                 y.append([0, 0])
             y = np.array(y)
-
             feed_dict = {haonet.x_image: x,
                          haonet.y_true: y}
 
@@ -230,8 +247,6 @@ class GUI:
             results.append(y_pre_cls)
 
         return results
-
-        #return random.randint(0, 1)
 
 
     def ImportFolder(self):
@@ -250,6 +265,9 @@ class GUI:
             self.imageListbox.see(idx)
             name = self.imageList[idx] 
             self.LoadImage(name)       
+            if len(self.resultList) == self.totalImgNumber: 
+                self.imageResultListbox.see(self.curImgNumber)
+                self.imageResultListbox.select_set(self.curImgNumber)
 
 
     def LoadImage(self, name):
@@ -325,11 +343,6 @@ class GUI:
             self.numberOfRuns += 1
 
         self.csvSavedText.set("Successfully saved to: " + fileDirectory)
-
-   # def UpdateListboxImage(self):
-        #self.imageListbox.delete(0,END)
-        #for image in self.imageList:
-        #    self.imageListbox.insert(END, image)
 
 if __name__ == '__main__':
     root = Tk()

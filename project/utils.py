@@ -54,24 +54,6 @@ def get_data(split="1", size="40X", platform="Windows", user="JunHao"):
     return data_set
 
 
-def centeredCrop(img, new_height, new_width):
-    width = np.size(img, 1)
-    height = np.size(img, 0)
-
-    left = np.ceil((width - new_width) / 2.)
-    top = np.ceil((height - new_height) / 2.)
-    right = np.floor((width + new_width) / 2.)
-    bottom = np.floor((height + new_height) / 2.)
-    cImg = img.crop((left, top, right, bottom))
-    return cImg
-
-
-def read_img(path, crop=64):
-    # print("Read File " + path)
-    img = Image.open(path)
-    img = centeredCrop(img, crop, crop)
-    img_arr = np.array(img)
-    return img_arr
 
 
 class Dataset:
@@ -222,7 +204,7 @@ def mirror(img, p=0.5):
 
 
 def get_image_mean(img):
-    r, g, b = 0, 0, 0
+    r, g, b= 0, 0, 0
     count = 0
     img_np = np.array(img)
     # print(img_np.shape)
@@ -236,14 +218,17 @@ def get_image_mean(img):
             g += tempg
             b += tempb
             count += 1
-    # calculate averages
+
     return np.array([int((r / count)), int((g / count)), int((b / count))])
 
 
 def random_crop(path, patch_size, num_of_imgs, do_rotate=False, do_mirror=False, sub_mean=False):
-    im = Image.open(path)
+    im = Image.open(path).convert("RGB")
+
     size = im.size[0] / 2, im.size[1] / 2
-    im.thumbnail(size)
+    if check_size(path,128):
+        im.thumbnail(size)
+
     mean = get_image_mean(im)
 
     imgs = []
@@ -289,30 +274,38 @@ def recreate_image(palette, labels, w, h):
             label_idx += 1
     return image
 
-def clusterFuck(path):
-    img = mpimg.imread(path)
-    img = img[:, :, :3]
+# def clusterFuck(path):
+#     img = mpimg.imread(path)
+#     img = img[:, :, :3]
+#
+#     w, h, d = tuple(img.shape)
+#     image_array = np.reshape(img, (w * h, d))
+#     sample = np.zeros(shape=(1000, 3))
+#     for i in range(1000):
+#         sample[i] = image_array[random.randrange(0, w * h)]
+#
+#     kmeans = KMeans(n_clusters=2, random_state=0).fit(sample)
+#     kmeans_palette = kmeans.cluster_centers_
+#     kmeans_labels = kmeans.predict(image_array)
+#
+#     plt.figure(2)
+#     plt.clf()
+#     ax = plt.axes([0, 0, 1, 1])
+#     plt.axis('off')
+#     plt.title('Compressed image (K-Means)')
+#     im = recreate_image(kmeans_palette, kmeans_labels, w, h)
+#     # im=Image.fromarray(im.astype('uint8'), 'RGB')
+#     # im.show()
+#     plt.imshow(im)
+#     plt.show()
 
-    w, h, d = tuple(img.shape)
-    image_array = np.reshape(img, (w * h, d))
-    sample = np.zeros(shape=(1000, 3))
-    for i in range(1000):
-        sample[i] = image_array[random.randrange(0, w * h)]
+def check_size(path,dim):
+    img = Image.open(path)
+    if img.size[0]>=dim and img.size[1]>=dim:
+        return True
+    else:
+        return False
 
-    kmeans = KMeans(n_clusters=2, random_state=0).fit(sample)
-    kmeans_palette = kmeans.cluster_centers_
-    kmeans_labels = kmeans.predict(image_array)
-
-    plt.figure(2)
-    plt.clf()
-    ax = plt.axes([0, 0, 1, 1])
-    plt.axis('off')
-    plt.title('Compressed image (K-Means)')
-    im = recreate_image(kmeans_palette, kmeans_labels, w, h)
-    # im=Image.fromarray(im.astype('uint8'), 'RGB')
-    # im.show()
-    plt.imshow(im)
-    plt.show()
 
 
 if __name__ == "__main__":

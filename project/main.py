@@ -7,7 +7,7 @@ import tensorflow as tf
 num_of_imgs = 100
 
 
-data = get_data(split="1", size="40X", platform="Windows", user="Hao")
+data = get_data(split="2", size="40X", platform="Windows", user="Hao")
 dataset = Dataset(data, crop=64, num_of_imgs=num_of_imgs)
 
 
@@ -62,6 +62,6 @@ def continuous(filename, times, num_of_images):
         test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
 
 
-# start_new(filename="params6", times=100, num_of_images=num_of_imgs)
+start_new(filename="split2", times=100, num_of_images=num_of_imgs)
 #
-continuous(filename="params5", times=20,num_of_images=num_of_imgs)
+# continuous(filename="params5", times=20,num_of_images=num_of_imgs)
