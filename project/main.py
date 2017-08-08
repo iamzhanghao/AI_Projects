@@ -55,7 +55,6 @@ def continuous(filename, times, num_of_images):
         test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
 
 
-# dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset6.npy")
 
 num_of_imgs = 100
 
@@ -68,20 +67,19 @@ print("################################"
 data = get_data(split="1", size="200X", platform="Windows", user="Hao")
 dataset = Dataset(data, crop=64, num_of_imgs=num_of_imgs)
 
+
+# start new training
 start_new(filename="split1", times=1,num_of_images=num_of_imgs)
 
-print("################################"
-      "################################"
-      "################################"
-      "split2")
-data = get_data(split="2", size="200X", platform="Windows", user="Hao")
-dataset = Dataset(data, crop=64, num_of_imgs=num_of_imgs)
+# continue training
+continuous(filename="split1", times=1,num_of_images=num_of_imgs)
 
-start_new(filename="split5", times=1,num_of_images=num_of_imgs)
+# validate using existing weights
+validate(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\set2_100\split1.npy")
 
-
+# test using existing weights
+test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\set2_100\split1.npy")
 
 
 
-#
-# continuous(filename="split3", times=2,num_of_images=num_of_imgs)
+
