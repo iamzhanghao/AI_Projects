@@ -1,4 +1,18 @@
 Image Name,Results
-1.png,M
-large.png,B
-SOB_B_A-14-22549AB-40-009.png,B
+bg_100.jpg,B
+bg_200.jpg,M
+bg_400.jpg,M
+fg_100.jpg,M
+fg_200.jpg,M
+fg_400.jpg,M
+Grade.VGH_1_10252 00_1_268_5_7_1_999_077.jpg,M
+SOB_M_DC-14-2523-100-041.png,M
+SOB_M_DC-14-2523-200-023.png,M
+SOB_M_DC-14-2523-400-005.png,M
+ti1b_100x_Grade.VGH_1_10252 00_1_268_5_7_1_999_077.jpg,M
+ti1_100x_Grade.VGH_1_10252 00_1_268_5_7_1_999_077.jpg,M
+ti1_200x_Grade.VGH_1_10252 00_1_268_5_7_1_999_077.jpg,M
+ti1_400x_Grade.VGH_1_10252 00_1_268_5_7_1_999_077.jpg,M
+ti2_100x_Grade.VGH_1_10218_10.jpg,M
+ti2_200x_Grade.VGH_1_10218_10.jpg,M
+ti2_400x_Grade.VGH_1_10218_10.jpg,M

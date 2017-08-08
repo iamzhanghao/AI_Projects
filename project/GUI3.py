@@ -258,7 +258,7 @@ class GUI:
             self.entryResultName.set(getcwd())
             print("Loaded from: " + result)
             self.imgDir = result + "/"
-            self.imageList = [f for f in listdir(self.imgDir) if re.match(r'.*\.png', f)]
+            self.imageList = [f for f in listdir(self.imgDir) if re.match(r'.*\.jpg', f) or re.match(r'.*\.png', f)]
 
             if len(self.imageList) == 0:
                 messagebox.showinfo("Warning", "No png files in selected folder.")
