@@ -19,3 +19,6 @@ B. reporting the accuracy on the test set images. note: test set, not validation
 code for running a GUI that allows a user to select one image of the test set, runs a prediction on it
  - run GUI.py and select folder where test set is stored
  - once done, press run classification
+
+# Note
+Read report.pdf for details
