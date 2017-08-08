@@ -8,6 +8,8 @@ from project.haonet import HaoNet
 import numpy as np
 import tensorflow as tf
 
+params = "C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\set2_100\split1.npy"
+
 
 class GUI:
     def __init__(self, master):
@@ -82,6 +84,9 @@ class GUI:
         self.entryResultDir.grid(row=2, column=1, columnspan=4, sticky=W + E)
         self.btnFolder = Button(self.frame, text="Choose", command=self.SelectResultFolder, width=8)
         self.btnFolder.grid(row=2, column=5, sticky=E)
+
+
+
 
         # main panel for labeling
         self.labelFolder = Label(self.frame, text="Image in the folder:")
@@ -188,7 +193,7 @@ class GUI:
                         fileDirectory = self.defaultImgDir + name
                     classifyDirList.append(fileDirectory)
 
-            haonet = HaoNet(dataset=None, params="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\split1.npy")
+            haonet = HaoNet(dataset=None, params=params)
 
             # classifyResults = Classify(classifyDirList)
             classifyResults = haonet.classify(classifyDirList)

@@ -57,18 +57,31 @@ def continuous(filename, times, num_of_images):
 
 # dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset6.npy")
 
-num_of_imgs = 500
+num_of_imgs = 100
+
+
 
 print("################################"
       "################################"
       "################################"
       "split1")
-data = get_data(split="3", size="100X", platform="Windows", user="Hao")
+data = get_data(split="1", size="200X", platform="Windows", user="Hao")
 dataset = Dataset(data, crop=64, num_of_imgs=num_of_imgs)
 
-start_new(filename="split3", times=2, num_of_images=num_of_imgs)
+start_new(filename="split1", times=1,num_of_images=num_of_imgs)
+
+print("################################"
+      "################################"
+      "################################"
+      "split2")
+data = get_data(split="2", size="200X", platform="Windows", user="Hao")
+dataset = Dataset(data, crop=64, num_of_imgs=num_of_imgs)
+
+start_new(filename="split5", times=1,num_of_images=num_of_imgs)
+
+
 
 
 
 #
-# continuous(filename="split2", times=20,num_of_images=num_of_imgs)
+# continuous(filename="split3", times=2,num_of_images=num_of_imgs)

@@ -381,20 +381,20 @@ class HaoNet:
                                    sub_mean=True)
                 testset.append(np.array(imgs))
             else:
-                testset.append("Error")
-        print(testset)
+                testset.append(np.array([]))
+        # print(testset)
 
-        testset = np.array(testset)
-        print(testset.shape)
+        # testset = np.array(testset)
+        # print(testset.shape)
 
         session = tf.Session()
         session.run(tf.global_variables_initializer())
 
-        for i in range(testset.shape[0]):
-            if testset[i] != "Error":
+        for i in range(len(testset)):
+            if testset[i].shape[0] != 0:
                 x = testset[i]
                 y = []
-                for j in range(testset.shape[1]):
+                for j in range(testset[i].shape[0]):
                     y.append([0, 0])
                 y = np.array(y)
 

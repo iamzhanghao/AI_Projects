@@ -47,6 +47,7 @@
 		   (clear ?ob)
 		   (arm-empty)
 		   (on-table ?ob)))
+
   (:action stack
 	     :parameters (?sob ?sunderob)
 	     :precondition (and (holding ?sob)
