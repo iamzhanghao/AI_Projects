@@ -143,7 +143,7 @@ class HaoNet:
         if use_relu:
             layer = tf.nn.relu(layer)
 
-        layer = tf.nn.dropout(layer,self.KEEPPROB)
+        layer = tf.nn.dropout(layer, self.KEEPPROB)
 
         return layer, weights, biases
 
@@ -208,7 +208,7 @@ class HaoNet:
         # This adds some non-linearity to the formula and allows us
         # to learn more complicated functions.
         layer = tf.nn.relu(layer)
-        layer = tf.nn.dropout(layer,self.KEEPPROB)
+        layer = tf.nn.dropout(layer, self.KEEPPROB)
 
         # Note that ReLU is normally executed before the pooling,
         # but since relu(max_pool(x)) == max_pool(relu(x)) we can
@@ -283,7 +283,6 @@ class HaoNet:
                                                          weights=self.params['weights']['fc2'],
                                                          biases=self.params['biases']['fc2'])
 
-
         self.y_pred = tf.nn.softmax(self.layer_fc2)
 
         self.y_pred_cls = tf.argmax(self.y_pred, dimension=1)
@@ -332,7 +331,9 @@ class HaoNet:
                 msg = "Optimization Iteration: {0:>6}, Training Accuracy: {1:>6.1%}"
 
                 # Print it.
-                print(msg.format(i + 1, acc))
+                print(msg.format(i + 1, acc), end="  \n")
+                # Print validation accuracy
+                # self.validate(session, mode='val')
 
         # Update the total number of iterations performed.
         total_iterations += num_iterations
@@ -375,14 +376,13 @@ class HaoNet:
         results = []
         testset = []
         for img_path in list_of_imgs_path:
-            if check_size(img_path,64):
+            if check_size(img_path, 64):
                 imgs = random_crop(path=img_path, patch_size=64, num_of_imgs=100, do_rotate=True, do_mirror=True,
                                    sub_mean=True)
                 testset.append(np.array(imgs))
             else:
                 testset.append("Error")
         print(testset)
-
 
         testset = np.array(testset)
         print(testset.shape)
@@ -409,13 +409,12 @@ class HaoNet:
                 else:
                     y_pre_cls = 0
                 results.append(y_pre_cls)
-                session.close()
+
             else:
                 results.append("Error")
             print(results)
-
+        session.close()
         return results
-
 
     def save_params(self, session, path):
         np.save(path, session.run(self.params))

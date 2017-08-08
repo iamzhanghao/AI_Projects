@@ -1,4 +1,12 @@
 from PIL import Image
 
-im = Image.open("C:\\Users\Hao\Desktop\\test1\\large.png").convert("RGB")
-print(im.size)
+
+
+
+def p():
+    print(a)
+
+a = 1
+p()
+a = 2
+p()

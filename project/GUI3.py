@@ -188,7 +188,7 @@ class GUI:
                         fileDirectory = self.defaultImgDir + name
                     classifyDirList.append(fileDirectory)
 
-            haonet = HaoNet(dataset=None, params="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\params6.npy")
+            haonet = HaoNet(dataset=None, params="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\split1.npy")
 
             # classifyResults = Classify(classifyDirList)
             classifyResults = haonet.classify(classifyDirList)

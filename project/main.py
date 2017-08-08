@@ -2,13 +2,6 @@ from project.haonet import HaoNet
 from project.utils import *
 import tensorflow as tf
 
-# dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset6.npy")
-
-num_of_imgs = 100
-
-
-data = get_data(split="2", size="40X", platform="Windows", user="Hao")
-dataset = Dataset(data, crop=64, num_of_imgs=num_of_imgs)
 
 
 def train(num_iterations, batchsize, load_weights, save_weights):
@@ -49,12 +42,12 @@ def start_new(filename, times, num_of_images):
 
     validate(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
     test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
-    continuous(filename, times - 1, num_of_images)
+    continuous(filename, times, num_of_images)
 
 
 def continuous(filename, times, num_of_images):
     for _ in range(times):
-        train(num_iterations=100 * num_of_images,
+        train(num_iterations=200 * num_of_images,
               batchsize=128,
               load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy",
               save_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
@@ -62,6 +55,20 @@ def continuous(filename, times, num_of_images):
         test(load_weights="C:\\Users\Hao\Projects\AI_Projects\project\saved_weights\\" + filename + ".npy")
 
 
-start_new(filename="split2", times=100, num_of_images=num_of_imgs)
+# dataset = Dataset(path="C:\\Users\Hao\Projects\AI_Projects\project\saved_dataset\dataset6.npy")
+
+num_of_imgs = 500
+
+print("################################"
+      "################################"
+      "################################"
+      "split1")
+data = get_data(split="3", size="100X", platform="Windows", user="Hao")
+dataset = Dataset(data, crop=64, num_of_imgs=num_of_imgs)
+
+start_new(filename="split3", times=2, num_of_images=num_of_imgs)
+
+
+
 #
-# continuous(filename="params5", times=20,num_of_images=num_of_imgs)
+# continuous(filename="split2", times=20,num_of_images=num_of_imgs)
